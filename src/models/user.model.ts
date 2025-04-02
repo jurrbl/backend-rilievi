@@ -1,4 +1,6 @@
+// src/models/user.model.ts
 import mongoose, { Document, Schema } from 'mongoose';
+
 export interface IUser extends Document {
   googleId: string;
   googleUsername?: string;
@@ -7,19 +9,19 @@ export interface IUser extends Document {
   username: string;
   phone: string;
   lastSeen?: Date;
-  role: 'user' | 'admin'; // <-- Restrizione esplicita
+  role: 'user' | 'admin'; // ruoli ammessi
 }
 
 const UserSchema: Schema = new Schema(
   {
-    googleId: { type: String, required: true, unique: true }, // Obbligatorio
-    googleUsername: { type: String }, // Aggiunto
+    googleId: { type: String, required: true, unique: true },
+    googleUsername: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // Non obbligatorio
-    username: { type: String, required: true, unique: true }, // Obbligatorio
-    role: { type: String, required: true, default: 'Utente' }, // Obbligatorio
-    phone: { type: String, default: '+39 3665950984'}, // Opzionale per utenti Google
-    lastSeen: { type: Date }, // Opzionale per utenti Google
+    password: { type: String },
+    username: { type: String, required: true, unique: true },
+    role: { type: String, enum: ['user', 'admin'], default: 'user', required: true },
+    phone: { type: String, default: '+39 3665950984' },
+    lastSeen: { type: Date },
   },
   { timestamps: true }
 );

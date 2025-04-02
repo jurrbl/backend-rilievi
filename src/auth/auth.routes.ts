@@ -80,15 +80,18 @@ router.get(
 router.get('/perizie', verifyToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
+    console.log(userId)
     console.log('🔍 userId:', userId);
+    console.log('🧠 Utente loggato:', req.user);
 
-    const perizie = await Perizia.find({ codiceOperatore: userId });
+    const perizie = await Perizia.find({ codiceOperatore: userId }).populate('codiceOperatore');
 
-    console.log('📦 Perizie trovate:', perizie.length);
+
+    console.log('📦 Perizie trovate:', );
 
     res.json({
       perizie,
-      nPerizie: perizie.length
+      message: 'Perizie trovate con successo',
     });
   } catch (error) {
     console.error('❌ Errore perizie:', error);

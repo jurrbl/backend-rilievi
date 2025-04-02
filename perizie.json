@@ -1,107 +1,100 @@
 [
-    {
-      "codicePerizia": "PZ-001",
-      "codiceOperatore": "OP-001",
-      "dataOra": "2025-04-01T10:30:00Z",
-      "coordinate": { "latitudine": 45.0703, "longitudine": 7.6869 },
-      "descrizione": "Danni a paraurti anteriore dopo sinistro stradale.",
-      "fotografie": [
-        { "url": "https://example.com/foto1.jpg", "commento": "Parte anteriore danneggiata" },
-        { "url": "https://example.com/foto2.jpg" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ-002",
-      "codiceOperatore": "OP-002",
-      "dataOra": "2025-04-02T14:15:00Z",
-      "coordinate": { "latitudine": 41.9028, "longitudine": 12.4964 },
-      "descrizione": "Infiltrazioni d'acqua dal tetto dell'abitazione.",
-      "fotografie": [
-        { "url": "https://example.com/foto3.jpg", "commento": "Tetto zona nord" }
-      ],
-      "stato": "in_corso"
-    },
-    {
-      "codicePerizia": "PZ-003",
-      "codiceOperatore": "OP-003",
-      "dataOra": "2025-04-01T09:45:00Z",
-      "coordinate": { "latitudine": 40.8518, "longitudine": 14.2681 },
-      "descrizione": "Esplosione accidentale in garage, verifica strutturale.",
-      "fotografie": [],
-      "stato": "annullata"
-    },
-    {
-      "codicePerizia": "PZ-004",
-      "codiceOperatore": "OP-001",
-      "dataOra": "2025-04-01T11:30:00Z",
-      "coordinate": { "latitudine": 44.4949, "longitudine": 11.3426 },
-      "descrizione": "Sopralluogo danni da allagamento magazzino.",
-      "fotografie": [
-        { "url": "https://example.com/foto4.jpg" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ-005",
-      "codiceOperatore": "OP-004",
-      "dataOra": "2025-04-02T16:00:00Z",
-      "coordinate": { "latitudine": 43.7696, "longitudine": 11.2558 },
-      "descrizione": "Verifica crepe su mura portanti condominio.",
-      "fotografie": [],
-      "stato": "in_corso"
-    },
-    {
-      "codicePerizia": "PZ-006",
-      "codiceOperatore": "OP-005",
-      "dataOra": "2025-03-31T15:00:00Z",
-      "coordinate": { "latitudine": 45.4384, "longitudine": 10.9916 },
-      "descrizione": "Controllo impianti dopo corto circuito.",
-      "fotografie": [
-        { "url": "https://example.com/foto5.jpg", "commento": "Pannello elettrico bruciato" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ-007",
-      "codiceOperatore": "OP-006",
-      "dataOra": "2025-04-01T13:15:00Z",
-      "coordinate": { "latitudine": 46.0664, "longitudine": 11.1210 },
-      "descrizione": "Verifica condizioni veicolo incidentato.",
-      "fotografie": [
-        { "url": "https://example.com/foto6.jpg" },
-        { "url": "https://example.com/foto7.jpg", "commento": "Parabrezza rotto" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ-008",
-      "codiceOperatore": "OP-002",
-      "dataOra": "2025-04-02T09:00:00Z",
-      "coordinate": { "latitudine": 45.4642, "longitudine": 9.19 },
-      "descrizione": "Infiltrazioni d'acqua nel piano interrato.",
-      "fotografie": [],
-      "stato": "in_corso"
-    },
-    {
-      "codicePerizia": "PZ-009",
-      "codiceOperatore": "OP-007",
-      "dataOra": "2025-03-30T10:00:00Z",
-      "coordinate": { "latitudine": 44.6471, "longitudine": 10.9252 },
-      "descrizione": "Rottura tubazione riscaldamento.",
-      "fotografie": [
-        { "url": "https://example.com/foto8.jpg" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ-010",
-      "codiceOperatore": "OP-003",
-      "dataOra": "2025-03-29T17:00:00Z",
-      "coordinate": { "latitudine": 45.0720, "longitudine": 7.6869 },
-      "descrizione": "Ispezione tetto post tempesta.",
-      "fotografie": [],
-      "stato": "annullata"
-    }
-  ]
-  
+  {
+    "codicePerizia": "PZ-001",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-01T10:30:00Z" },
+    "coordinate": { "latitudine": 45.0703, "longitudine": 7.6869 },
+    "descrizione": "Danni al paraurti anteriore.",
+    "fotografie": [
+      { "url": "https://example.com/foto1.jpg", "commento": "Impatto frontale" }
+    ],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ-002",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-02T14:15:00Z" },
+    "coordinate": { "latitudine": 41.9028, "longitudine": 12.4964 },
+    "descrizione": "Infiltrazioni d'acqua dal tetto.",
+    "fotografie": [],
+    "stato": "in_corso"
+  },
+  {
+    "codicePerizia": "PZ-003",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-03T11:00:00Z" },
+    "coordinate": { "latitudine": 40.8518, "longitudine": 14.2681 },
+    "descrizione": "Verifica impianti elettrici danneggiati.",
+    "fotografie": [
+      { "url": "https://example.com/foto2.jpg" }
+    ],
+    "stato": "annullata"
+  },
+  {
+    "codicePerizia": "PZ-004",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-04T09:30:00Z" },
+    "coordinate": { "latitudine": 43.7696, "longitudine": 11.2558 },
+    "descrizione": "Crepe nei muri portanti.",
+    "fotografie": [],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ-005",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-05T15:00:00Z" },
+    "coordinate": { "latitudine": 44.4949, "longitudine": 11.3426 },
+    "descrizione": "Controllo post allagamento.",
+    "fotografie": [
+      { "url": "https://example.com/foto3.jpg", "commento": "Zona magazzino" }
+    ],
+    "stato": "in_corso"
+  },
+  {
+    "codicePerizia": "PZ-006",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-06T16:00:00Z" },
+    "coordinate": { "latitudine": 45.4384, "longitudine": 10.9916 },
+    "descrizione": "Verifica tetto post-tempesta.",
+    "fotografie": [],
+    "stato": "annullata"
+  },
+  {
+    "codicePerizia": "PZ-007",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-07T13:15:00Z" },
+    "coordinate": { "latitudine": 46.0664, "longitudine": 11.1210 },
+    "descrizione": "Analisi danni veicolo incidentato.",
+    "fotografie": [
+      { "url": "https://example.com/foto4.jpg" }
+    ],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ-008",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-08T09:00:00Z" },
+    "coordinate": { "latitudine": 45.4642, "longitudine": 9.19 },
+    "descrizione": "Controllo infiltrazioni nel piano interrato.",
+    "fotografie": [],
+    "stato": "in_corso"
+  },
+  {
+    "codicePerizia": "PZ-009",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-09T10:00:00Z" },
+    "coordinate": { "latitudine": 44.6471, "longitudine": 10.9252 },
+    "descrizione": "Verifica tubazioni danneggiate.",
+    "fotografie": [],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ-010",
+    "codiceOperatore": { "$oid": "67ed6c0161807cb002b6445b" },
+    "dataOra": { "$date": "2025-04-10T17:00:00Z" },
+    "coordinate": { "latitudine": 45.0720, "longitudine": 7.6869 },
+    "descrizione": "Sopralluogo generale danni strutturali.",
+    "fotografie": [],
+    "stato": "in_corso"
+  }
+]

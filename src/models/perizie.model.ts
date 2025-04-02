@@ -1,3 +1,4 @@
+// src/models/perizie.model.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IFoto {
@@ -7,9 +8,8 @@ export interface IFoto {
 
 export interface IPerizia extends Document {
   codicePerizia: string;
-  codiceOperatore: mongoose.Types.ObjectId;
+  codiceOperatore: mongoose.Types.ObjectId; // riferimento a User
   dataOra: Date;
-  nPerizie : number;
   coordinate: {
     latitudine: number;
     longitudine: number;
@@ -33,7 +33,6 @@ const PeriziaSchema = new Schema<IPerizia>(
       required: true,
     },
     dataOra: { type: Date, required: true },
-    nPerizie: { type: Number, required: true, default: 100 },
     coordinate: {
       latitudine: { type: Number, required: true },
       longitudine: { type: Number, required: true },
@@ -51,3 +50,4 @@ const PeriziaSchema = new Schema<IPerizia>(
 );
 
 export default mongoose.model<IPerizia>('Perizia', PeriziaSchema);
+  
