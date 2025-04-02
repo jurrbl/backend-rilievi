@@ -1,0 +1,83 @@
+[
+    {
+      "googleId": "201",
+      "googleUsername": "Mario Rossi",
+      "email": "mario.rossi@example.com",
+      "username": "mario",
+      "phone": "+39 320 123 4567",
+      "role": "user"
+    },
+    {
+      "googleId": "202",
+      "googleUsername": "Giulia Verdi",
+      "email": "giulia.verdi@example.com",
+      "username": "giulia",
+      "phone": "+39 320 234 5678",
+      "role": "user"
+    },
+    {
+      "googleId": "203",
+      "googleUsername": "Luca Admin",
+      "email": "luca.admin@example.com",
+      "username": "luca",
+      "phone": "+39 320 345 6789",
+      "role": "admin"
+    },
+    {
+      "googleId": "204",
+      "googleUsername": "Sara Neri",
+      "email": "sara.neri@example.com",
+      "username": "sara",
+      "phone": "+39 320 456 7890",
+      "role": "user"
+    },
+    {
+      "googleId": "205",
+      "googleUsername": "Paolo Gialli",
+      "email": "paolo.gialli@example.com",
+      "username": "paolo",
+      "phone": "+39 320 567 8901",
+      "role": "user"
+    },
+    {
+      "googleId": "206",
+      "googleUsername": "Elena Admin",
+      "email": "elena.admin@example.com",
+      "username": "elena",
+      "phone": "+39 320 678 9012",
+      "role": "admin"
+    },
+    {
+      "googleId": "207",
+      "googleUsername": "Marco Blu",
+      "email": "marco.blu@example.com",
+      "username": "marco",
+      "phone": "+39 320 789 0123",
+      "role": "user"
+    },
+    {
+      "googleId": "208",
+      "googleUsername": "Alessia Rosa",
+      "email": "alessia.rosa@example.com",
+      "username": "alessia",
+      "phone": "+39 320 890 1234",
+      "role": "user"
+    },
+    {
+      "googleId": "209",
+      "googleUsername": "Giorgio Admin",
+      "email": "giorgio.admin@example.com",
+      "username": "giorgio",
+      "phone": "+39 320 901 2345",
+      "role": "admin"
+    },
+    {
+      "googleId": "210",
+      "googleUsername": "Francesca Viola",
+      "email": "francesca.viola@example.com",
+      "username": "francesca",
+      "phone": "+39 320 012 3456",
+      "role": "user"
+    }
+  ]
+  

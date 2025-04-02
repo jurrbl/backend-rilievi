@@ -10,8 +10,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rilievi_db';
+/* const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://admin:admin@tpsi.twqyd.mongodb.net/'; */
+/*  */
 
+const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL! + process.env.DBNAME!;
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -30,6 +32,7 @@ app.use(passport.session());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); // Aggiungi questa riga per le perizie
 
 app.get('/', (req, res) => {
   res.send('✅ Backend avviato');

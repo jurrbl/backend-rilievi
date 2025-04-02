@@ -6,6 +6,7 @@ import passport from '../auth/passport';
 import { verifyToken } from '../middlewares/auth.middleware';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import User from '../models/user.model';
+import Perizia from '../models/perizie.model';
 
 const router = express.Router();
 
@@ -74,5 +75,28 @@ router.get(
     }
   }
 );
+
+// Perizie
+router.get('/perizie', verifyToken, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    console.log('🔍 userId:', userId);
+
+    const perizie = await Perizia.find({ codiceOperatore: userId });
+
+    console.log('📦 Perizie trovate:', perizie.length);
+
+    res.json({
+      perizie,
+      nPerizie: perizie.length
+    });
+  } catch (error) {
+    console.error('❌ Errore perizie:', error);
+    res.status(500).json({ message: 'Errore server', error });
+  }
+});
+
+
+
 
 export default router;
