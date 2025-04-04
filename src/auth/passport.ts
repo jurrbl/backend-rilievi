@@ -15,14 +15,18 @@ async (_, __, profile, done) => {
     const existingUser = await User.findOne({ googleId: profile.id });
 
     if (existingUser) {
-      // 🔁 Aggiorna la foto profilo se non salvata
+      // Aggiorna sempre l'accesso
+      existingUser.lastSeen = new Date().toISOString();
+    
+      // Aggiorna la foto solo se mancante
       if (!existingUser.profilePicture && profile.photos?.[0]?.value) {
         existingUser.profilePicture = profile.photos[0].value;
-        await existingUser.save();
-        console.log('🖼️ Foto profilo aggiornata per utente esistente.');
       }
-
-      return done(null, existingUser); // ✅ Utente esistente trovato
+    
+      await existingUser.save();
+      console.log('✅ Utente aggiornato con lastSeen:', existingUser.lastSeen);
+    
+      return done(null, existingUser); // Utente trovato
     }
 
     // ⛔ Se non trovi l'email, interrompi

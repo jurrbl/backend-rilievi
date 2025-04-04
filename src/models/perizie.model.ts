@@ -8,7 +8,11 @@ export interface IFoto {
 
 export interface IPerizia extends Document {
   codicePerizia: string;
-  codiceOperatore: mongoose.Types.ObjectId; // riferimento a User
+  codiceOperatore: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  } // riferimento a User  
   dataOra: Date;
   coordinate: {
     latitudine: number;
@@ -49,5 +53,8 @@ const PeriziaSchema = new Schema<IPerizia>(
   { timestamps: true }
 );
 
-export default mongoose.model<IPerizia>('Perizia', PeriziaSchema);
+export default mongoose.model<IPerizia>('Perizia', PeriziaSchema, 'perizie');
+//                                                    ↑             ↑
+//                                 nome modello     schema     nome collezione personalizzato
+
   

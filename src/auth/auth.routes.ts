@@ -1,4 +1,3 @@
-
 // src/routes/auth.routes.ts
 
 import express, { Request, Response } from 'express';
@@ -13,10 +12,7 @@ const router = express.Router();
 // 🔐 LOGIN CON GOOGLE
 router.get(
   '/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
-  
+  passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
 // 🔄 CALLBACK DOPO LOGIN
@@ -31,7 +27,7 @@ router.get(
       return;
     }
 
-    // ✅ Genera il token con tipi corretti
+    // ✅ Genera il token
     const jwtSecret: string = process.env.JWT_SECRET || 'supersegreto123';
     const jwtOptions: SignOptions = {
       expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn'],
@@ -48,23 +44,21 @@ router.get(
 
     console.log('📦 TOKEN generato:', jwt.decode(token));
 
-    // ✅ Redirect con token al frontend
-    /* res.json({ token, user: req.user }); */
+    // ✅ Redirect al frontend con token
     res.redirect(`http://localhost:4200/home?token=${token}`);
   }
 );
 
-// ✅ ROUTE PROTETTA /me PER OTTENERE I DATI UTENTE
+// ✅ /me → Ritorna dati utente loggato
 router.get(
   '/me',
   verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = (req as any).user.id;
-      
       console.log('🔍 Token decodificato:', (req as any).user);
 
-      const user = await User.findById(userId)
+      const user = await User.findById(userId);
       console.log('🔍 Utente trovato:', user);
 
       if (!user) {
@@ -79,30 +73,30 @@ router.get(
   }
 );
 
-// Perizie
-router.get('/perizie', verifyToken, async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).user.id;
-    console.log(userId)
-    console.log('🔍 userId:', userId);
-    console.log('🧠 Utente loggato:', req.user);
+router.get(
+  '/perizie',
+  verifyToken,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).user.id;
+      console.log('🔍 Token decodificato:', (req as any).user);
 
-    const perizie = await Perizia.find({ codiceOperatore: userId }).populate('codiceOperatore');
+      const perizie = await Perizia.find({ codiceOperatore: userId });
 
+      console.log('📄 Perizie trovate:', perizie); // 👈 stampa in console
 
-    console.log('📦 Perizie trovate:', );
+      if (!perizie || perizie.length === 0) {
+        res.json({ perizie: [], nPerizie: 0 });
+        return;
+      }
 
-    res.json({
-      perizie,
-      message: 'Perizie trovate con successo',
-    });
-  } catch (error) {
-    console.error('❌ Errore perizie:', error);
-    res.status(500).json({ message: 'Errore server', error });
+      res.json({ perizie, nPerizie: perizie.length });
+    } catch (error) {
+      console.error('❌ Errore perizie:', error);
+      res.status(500).json({ message: 'Errore server', error });
+    }
   }
-});
-
-
-
+);
+  
 
 export default router;
