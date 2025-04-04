@@ -9,7 +9,8 @@ export interface IUser extends Document {
   username: string;
   phone: string;
   lastSeen?: Date;
-  role: 'user' | 'admin'; // ruoli ammessi
+  role: 'User' | 'Admin'; // ruoli ammessi
+  profilePicture?: string; // 
 }
 
 const UserSchema: Schema = new Schema(
@@ -22,6 +23,7 @@ const UserSchema: Schema = new Schema(
     role: { type: String, enum: ['user', 'admin'], default: 'user', required: true },
     phone: { type: String, default: '+39 3665950984' },
     lastSeen: { type: Date },
+    profilePicture: { type: String }
   },
   { timestamps: true }
 );

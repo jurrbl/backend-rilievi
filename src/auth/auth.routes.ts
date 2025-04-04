@@ -13,7 +13,10 @@ const router = express.Router();
 // 🔐 LOGIN CON GOOGLE
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })
+  
 );
 
 // 🔄 CALLBACK DOPO LOGIN
