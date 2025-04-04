@@ -1,67 +1,65 @@
-
 [
-    {
-      "codicePerizia": "PZ001",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-01T10:00:00Z",
-      "coordinate": { "lat": 45.0703, "lon": 7.6869 },
-      "descrizione": "Verifica danni al tetto dopo la grandine",
-      "foto": [
-        { "url": "tetto1.jpg", "commento": "Danno principale" },
-        { "url": "tetto2.jpg", "commento": "Vista laterale" }
-      ],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ002",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-02T14:30:00Z",
-      "coordinate": { "lat": 45.0721, "lon": 7.6801 },
-      "descrizione": "Danno da allagamento in garage",
-      "foto": [],
-      "stato": "in corso"
-    },
-    {
-      "codicePerizia": "PZ003",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-03T09:45:00Z",
-      "coordinate": { "lat": 45.0742, "lon": 7.6782 },
-      "descrizione": "Perizia incendio cucina",
-      "foto": [
-        { "url": "cucina.jpg", "commento": "Dettaglio danno" }
-      ],
-      "stato": "annullata"
-    },
-    {
-      "codicePerizia": "PZ004",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-04T11:00:00Z",
-      "coordinate": { "lat": 45.0763, "lon": 7.6901 },
-      "descrizione": "Verifica danni esterni edificio",
-      "foto": [],
-      "stato": "completata"
-    },
-    {
-      "codicePerizia": "PZ005",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-04T15:30:00Z",
-      "coordinate": { "lat": 45.0795, "lon": 7.6950 },
-      "descrizione": "Perizia auto incidentata",
-      "foto": [
-        { "url": "auto1.jpg", "commento": "Vista frontale" },
-        { "url": "auto2.jpg", "commento": "Paraurti" }
-      ],
-      "stato": "in corso"
-    },
-    {
-      "codicePerizia": "PZ006",
-      "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
-      "dataOra": "2025-04-04T18:00:00Z",
-      "coordinate": { "lat": 45.0821, "lon": 7.6980 },
-      "descrizione": "Verifica impianto elettrico",
-      "foto": [],
-      "stato": "completata"
-    }
-    
-  ]
+  {
+    "codicePerizia": "PZ001",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-01T10:00:00Z",
+    "coordinate": { "lat": 45.0703, "lon": 7.6869 },
+    "descrizione": "Verifica danni al tetto dopo la grandine",
+    "foto": [
+      { "url": "tetto1.jpg", "commento": "Danno principale" },
+      { "url": "tetto2.jpg", "commento": "Vista laterale" }
+    ],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ002",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-02T14:30:00Z",
+    "coordinate": { "lat": 45.0721, "lon": 7.6801 },
+    "descrizione": "Danno da allagamento in garage",
+    "foto": [],
+    "stato": "in corso"
+  },
+  {
+    "codicePerizia": "PZ003",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-03T09:45:00Z",
+    "coordinate": { "lat": 45.0742, "lon": 7.6782 },
+    "descrizione": "Perizia incendio cucina",
+    "foto": [
+      { "url": "cucina.jpg", "commento": "Dettaglio danno" }
+    ],
+    "stato": "annullata"
+  },
+  {
+    "codicePerizia": "PZ004",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-04T11:00:00Z",
+    "coordinate": { "lat": 45.0763, "lon": 7.6901 },
+    "descrizione": "Verifica danni esterni edificio",
+    "foto": [],
+    "stato": "completata"
+  },
+  {
+    "codicePerizia": "PZ005",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-04T15:30:00Z",
+    "coordinate": { "lat": 45.0795, "lon": 7.6950 },
+    "descrizione": "Perizia auto incidentata",
+    "foto": [
+      { "url": "auto1.jpg", "commento": "Vista frontale" },
+      { "url": "auto2.jpg", "commento": "Paraurti" }
+    ],
+    "stato": "in corso"
+  },
+  {
+    "codicePerizia": "PZ006",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-04T18:00:00Z",
+    "coordinate": { "lat": 45.0821, "lon": 7.6980 },
+    "descrizione": "Verifica impianto elettrico",
+    "foto": [],
+    "stato": "completata"
+  }
   
+]
