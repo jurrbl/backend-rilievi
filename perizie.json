@@ -61,5 +61,23 @@
     "foto": [],
     "stato": "completata"
   }
+  {
+    "codicePerizia": "PZ006",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-04T18:00:00Z",
+    "coordinate": { "lat": 45.0821, "lon": 7.6980 },
+    "descrizione": "Verifica impianto elettrico",
+    "foto": [],
+    "stato": "completata"
+  }
+  {
+    "codicePerizia": "PZ006",
+    "codiceOperatore": { "$oid": "67ef9fbdef1414552f2bce8e" },
+    "dataOra": "2025-04-04T18:00:00Z",
+    "coordinate": { "lat": 45.0821, "lon": 7.6980 },
+    "descrizione": "Verifica impianto elettrico",
+    "foto": [],
+    "stato": "completata"
+  }
   
 ]
