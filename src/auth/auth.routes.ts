@@ -15,6 +15,12 @@ router.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
+async function generaCodiceUnivoco(): Promise<string> {
+  const count = await Perizia.countDocuments();
+  return 'P' + String(2000 + count + 1); // Es: P2042
+}
+
+
 // 🔄 CALLBACK DOPO LOGIN
 router.get(
   '/google/callback',
@@ -72,6 +78,28 @@ router.get(
     }
   }
 );
+
+
+
+router.post('/addPerizie', async (req, res) => {
+  const { dataOra, coordinate, descrizione, stato, codiceOperatore } = req.body;
+
+  const codicePerizia = await generaCodiceUnivoco(); // es: 'P2042'
+  
+  const perizia = new Perizia({
+    codicePerizia,
+    dataOra,
+    coordinate,
+    descrizione,
+    stato,
+    codiceOperatore
+  });
+
+  await perizia.save();
+  res.status(201).json(perizia);
+});
+
+
 
 router.get(
   '/perizie',
