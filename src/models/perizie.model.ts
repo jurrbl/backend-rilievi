@@ -50,6 +50,7 @@ const PeriziaSchema = new Schema<IPerizia>(
     },
     fotografie: {
       type: [FotoSchema],
+      required: true,
       default: [],
     },
     stato: {

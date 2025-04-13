@@ -1,5 +1,4 @@
 // src/routes/auth.routes.ts
-
 import express, { Request, Response } from 'express';
 import passport from '../auth/passport';
 import { verifyToken } from '../middlewares/auth.middleware';
@@ -10,34 +9,29 @@ import Perizia from '../models/perizie.model';
 const router = express.Router();
 
 // 🔐 LOGIN CON GOOGLE
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
+// Genera codice perizia tipo P2042
 async function generaCodiceUnivoco(): Promise<string> {
   const count = await Perizia.countDocuments();
-  return 'P' + String(2000 + count + 1); // Es: P2042
+  return 'P' + String(2000 + count + 1);
 }
 
-
-// 🔄 CALLBACK DOPO LOGIN
+// 🔁 CALLBACK dopo login
 router.get(
   '/google/callback',
   passport.authenticate('google', { session: false }),
   (req: any, res: Response): void => {
-    console.log('🔐 req.user dopo login Google:', req.user);
-
     if (!req.user || !req.user._id) {
       res.status(401).json({ message: 'Autenticazione fallita' });
       return;
     }
 
-    // ✅ Genera il token
-    const jwtSecret: string = process.env.JWT_SECRET || 'supersegreto123';
+    const jwtSecret = process.env.JWT_SECRET || 'supersegreto123';
     const jwtOptions: SignOptions = {
       expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn'],
     };
+
     const token = jwt.sign(
       {
         id: req.user._id,
@@ -48,83 +42,80 @@ router.get(
       jwtOptions
     );
 
-    console.log('📦 TOKEN generato:', jwt.decode(token));
-
-    // ✅ Redirect al frontend con token
     res.redirect(`http://localhost:4200/home?token=${token}`);
   }
 );
 
-// ✅ /me → Ritorna dati utente loggato
-router.get(
-  '/me',
-  verifyToken,
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userId = (req as any).user.id;
-      console.log('🔍 Token decodificato:', (req as any).user);
-
-      const user = await User.findById(userId);
-      console.log('🔍 Utente trovato:', user);
-
-      if (!user) {
-        res.status(404).json({ message: 'Utente non trovato' });
-        return;
-      }
-
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: 'Errore server', error });
+// ✅ /me → ritorna utente loggato
+router.get('/me', verifyToken, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: 'Utente non trovato' });
+      return;
     }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Errore server', error });
   }
-);
-
-
-
-router.post('/addPerizie', async (req, res) => {
-  const { dataOra, coordinate, descrizione, stato, codiceOperatore } = req.body;
-
-  const codicePerizia = await generaCodiceUnivoco(); // es: 'P2042'
-  
-  const perizia = new Perizia({
-    codicePerizia,
-    dataOra,
-    coordinate,
-    descrizione,
-    stato,
-    codiceOperatore
-  });
-
-  await perizia.save();
-  res.status(201).json(perizia);
 });
 
+// ✅ Aggiungi perizia
+router.post('/addPerizie', async (req: Request, res: Response) => {
+  try {
+    const { dataOra, coordinate, descrizione, stato, codiceOperatore } = req.body;
+    const codicePerizia = await generaCodiceUnivoco();
 
+    const perizia = new Perizia({
+      codicePerizia,
+      dataOra,
+      coordinate,
+      descrizione,
+      stato,
+      codiceOperatore
+    });
 
-router.get(
-  '/perizie',
-  verifyToken,
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userId = (req as any).user.id;
-      console.log('🔍 Token decodificato:', (req as any).user);
-
-      const perizie = await Perizia.find({ codiceOperatore: userId });
-
-      console.log('📄 Perizie trovate:', perizie); // 👈 stampa in console
-
-      if (!perizie || perizie.length === 0) {
-        res.json({ perizie: [], nPerizie: 0 });
-        return;
-      }
-
-      res.json({ perizie, nPerizie: perizie.length });
-    } catch (error) {
-      console.error('❌ Errore perizie:', error);
-      res.status(500).json({ message: 'Errore server', error });
-    }
+    await perizia.save();
+    res.status(201).json(perizia);
+  } catch (error) {
+    res.status(500).json({ message: 'Errore durante il salvataggio della perizia', error });
   }
-);
-  
+});
+
+// ✅ Lista perizie dell’utente loggato
+router.get('/perizie', verifyToken, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const perizie = await Perizia.find({ codiceOperatore: userId });
+
+    res.json({ perizie, nPerizie: perizie.length });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore server', error });
+  }
+});
+
+// ✅ Aggiungi foto a una perizia
+router.post('/perizie/:id/foto', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { url, commento } = req.body;
+
+    const perizia = await Perizia.findById(id);
+    if (!perizia) {
+      res.status(404).json({ message: 'Perizia non trovata' });
+      return;
+    }
+
+    perizia.fotografie.push({ url, commento });
+    await perizia.save();
+
+    res.status(200).json(perizia);
+  } catch (error) {
+    console.error('Errore salvataggio foto:', error);
+    res.status(500).json({ message: 'Errore durante il salvataggio della foto', error });
+  }
+});
 
 export default router;
