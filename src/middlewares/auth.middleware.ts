@@ -1,27 +1,24 @@
 // src/middlewares/auth.middleware.ts
+import { RequestHandler } from 'express';
+import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 
-import { Request, Response, NextFunction, RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
+const JWT_SECRET = process.env.JWT_SECRET || 'supersegreto123';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
-
-// Middleware per proteggere le route
 export const verifyToken: RequestHandler = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies?.jwt;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'Token mancante o non valido' });
+  if (!token) {
+    res.status(401).json({ message: 'Token mancante' });
     return;
   }
 
-  const token = authHeader.split(' ')[1];
+  jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
+    if (err) {
+      res.status(403).json({ message: 'Token non valido' });
+      return;
+    }
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email?: string };
-    console.log('🔍 Token decodificato:', decoded);
-    (req as any).user = decoded; // oppure definisci un'interfaccia estesa
+    (req as any).user = decoded;
     next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token non valido' });
-  }
+  });
 };
