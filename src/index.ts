@@ -6,6 +6,7 @@ import cors from 'cors';
 import passport from './auth/passport';
 import session from 'express-session';
 import authRoutes from './auth/auth.routes';
+import { verifyToken } from './middlewares/auth.middleware';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/auth', authRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('✅ Backend avviato');
