@@ -271,26 +271,30 @@ router.post('/perizie/:id/foto', async (req: Request, res: Response) => {
 
 /* PUT /auth/perizie/:id */
 
-router.put('/perizie/:id', async (req: Request, res: Response) => {
+router.put('/perizie/:id', async (req: Request, res: Response) : Promise <any> => {
   try {
     const { id } = req.params;
-    const { descrizione } = req.body;
+    const { descrizione, indirizzo, coordinate } = req.body;
 
     const perizia = await Perizia.findById(id);
     if (!perizia) {
-      res.status(404).json({ message: 'Perizia non trovata' });
-      return;
+      return res.status(404).json({ message: 'Perizia non trovata' });
     }
 
-    perizia.descrizione = descrizione;
-    const aggiornata = await perizia.save();
+    // ✅ Aggiorna i campi modificabili
+    if (descrizione !== undefined) perizia.descrizione = descrizione;
+    if (indirizzo !== undefined) perizia.indirizzo = indirizzo;
+    if (coordinate !== undefined) perizia.coordinate = coordinate;
 
+    const aggiornata = await perizia.save();
     res.status(200).json(aggiornata);
+
   } catch (error) {
     console.error('Errore aggiornamento perizia:', error);
     res.status(500).json({ message: 'Errore durante l\'aggiornamento della perizia', error });
   }
 });
+
 
 // ✅ Elimina perizia
 router.delete('/perizie/:id', async (req: Request, res: Response) => {

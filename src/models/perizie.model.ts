@@ -8,12 +8,13 @@ export interface IFoto {
 
 export interface IPerizia extends Document {
   codicePerizia: string;
-  codiceOperatore: mongoose.Types.ObjectId; // Riferimento a User
+  codiceOperatore: mongoose.Types.ObjectId;
   dataOra: Date;
   coordinate: {
     latitudine: number;
     longitudine: number;
   };
+  indirizzo: string; // ✅ Aggiunto qui
   descrizione: string;
   fotografie: IFoto[];
   stato: 'in_corso' | 'completata' | 'annullata';
@@ -26,28 +27,15 @@ const FotoSchema = new Schema<IFoto>({
 
 const PeriziaSchema = new Schema<IPerizia>(
   {
-    codicePerizia: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    codiceOperatore: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    dataOra: {
-      type: Date,
-      required: true,
-    },
+    codicePerizia: { type: String, required: true, unique: true },
+    codiceOperatore: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    dataOra: { type: Date, required: true },
     coordinate: {
       latitudine: { type: Number, required: true },
       longitudine: { type: Number, required: true },
     },
-    descrizione: {
-      type: String,
-      required: true,
-    },
+    indirizzo: { type: String, required: false }, // ✅ Aggiunto qui
+    descrizione: { type: String, required: true },
     fotografie: {
       type: [FotoSchema],
       required: true,
@@ -60,9 +48,7 @@ const PeriziaSchema = new Schema<IPerizia>(
       required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default mongoose.model<IPerizia>('Perizia', PeriziaSchema, 'perizie');
