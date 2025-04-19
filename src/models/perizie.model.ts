@@ -34,7 +34,7 @@ const PeriziaSchema = new Schema<IPerizia>(
       latitudine: { type: Number, required: true },
       longitudine: { type: Number, required: true },
     },
-    indirizzo: { type: String, required: false }, // ✅ Aggiunto qui
+    indirizzo: { type: String, required: true }, // ✅ Aggiunto qui
     descrizione: { type: String, required: true },
     fotografie: {
       type: [FotoSchema],
