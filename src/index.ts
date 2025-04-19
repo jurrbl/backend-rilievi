@@ -1,10 +1,10 @@
-// index.ts
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import passport from './auth/passport';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import authRoutes from './auth/auth.routes';
 import { verifyToken } from './middlewares/auth.middleware';
 
@@ -19,6 +19,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   session({
     secret: process.env.JWT_SECRET!,
@@ -27,9 +28,11 @@ app.use(
   })
 );
 
+// ✅ Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ✅ API routes
 app.use('/api/auth', authRoutes);
 
 
@@ -37,6 +40,7 @@ app.get('/', (req, res) => {
   res.send('✅ Backend avviato');
 });
 
+// ✅ Connessione DB + avvio server
 mongoose
   .connect(MONGO_URI)
   .then(() => {

@@ -9,7 +9,7 @@ export interface IUser extends Document {
   username: string;
   phone: string;
   lastSeen?: string | Date; // accetta entrambi (utile se vuoi usare direttamente Date oggetti)
-  role: 'User' | 'Admin'; // ruoli ammessi
+  role: 'user' | 'admin'; // ruoli ammessi
   profilePicture?: string; // 
 }
 
@@ -28,4 +28,6 @@ const UserSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+// ✅ solo questa riga definisce l’indice in modo corretto
+UserSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 export default mongoose.model<IUser>('User', UserSchema, 'users');
