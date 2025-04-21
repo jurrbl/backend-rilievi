@@ -14,6 +14,15 @@ async function isAdmin(req: Request, res: Response, next: any) : Promise <any>  
   next();
 }
 
+router.get('/all-perizie', verifyToken, async (req: Request, res: Response): Promise<any> => {
+  try {
+    const perizie = await Perizia.find(); // tutte le perizie
+    res.json({ perizie, nPerizie: perizie.length });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore nel recupero perizie', error });
+  }
+});
+
 
 router.get('/utenti', verifyToken, isAdmin, async (req, res) => {
     try {
@@ -31,7 +40,7 @@ router.get('/utenti', verifyToken, isAdmin, async (req, res) => {
     }
   });
 
-  router.get('/utenti-con-perizie', verifyAdmin, async (req: Request, res: Response) => {
+  router.get('/utenti-con-perizie', verifyAdmin, async (req: Request, res: Response) : Promise<any> => {
     try {
       const utenti = await User.find({ role: 'user' });
   
@@ -116,19 +125,30 @@ router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) : Promi
 });
 
 // ✅ Modifica completa perizia (compreso stato, descrizione ecc.)
-router.put('/perizie/:id', verifyToken, isAdmin, async (req, res) : Promise <any> => {
+router.put('/perizie/:id', verifyToken, async (req: Request, res: Response) => {
+  console.log('PUT /perizie/:id BODY:', req.body);
+
   try {
     const { id } = req.params;
-    const aggiornamenti = req.body;
+    const { descrizione, coordinate, indirizzo, stato, fotografie } = req.body;
 
-    const perizia = await Perizia.findByIdAndUpdate(id, aggiornamenti, { new: true });
+    const perizia = await Perizia.findById(id);
     if (!perizia) return res.status(404).json({ message: 'Perizia non trovata' });
 
-    res.status(200).json(perizia);
+    if (descrizione !== undefined) perizia.descrizione = descrizione;
+    if (coordinate !== undefined) perizia.coordinate = coordinate;
+    if (indirizzo !== undefined) perizia.indirizzo = indirizzo;
+    if (fotografie !== undefined) perizia.fotografie = fotografie;
+    if (stato !== undefined) perizia.stato = stato;
+
+    await perizia.save();
+    res.json({ message: 'Perizia aggiornata', perizia });
   } catch (error) {
-    res.status(500).json({ message: 'Errore durante aggiornamento', error });
+    console.error('❌ ERRORE BACKEND:', error);
+    res.status(500).json({ message: 'Errore durante l\'aggiornamento', error });
   }
 });
+
 
 // ✅ Elimina qualsiasi perizia
 router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res) : Promise <any> => {
