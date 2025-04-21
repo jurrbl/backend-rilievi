@@ -18,7 +18,7 @@ const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL! + process.env.DBNAME!;
 
 // 🔧 Middleware
 app.use(cors({
-  origin: ['http://localhost:4200', 'https://backend-rilievi.onrender.com'],
+  origin: ['https://backend-rilievi.onrender.com', 'http://localhost:4200'],
   credentials: true
 }));
 app.use(express.json());
