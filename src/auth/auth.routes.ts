@@ -50,7 +50,7 @@ router.get(
 // ✅ Dentro AuthService (Angular - frontend)
 
 // ✅ LOGIN CLASSICO (email + password)
-router.post('/login', async (req, res): Promise<any> => {
+router.post('/login', async (req : Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -82,7 +82,7 @@ router.post('/login', async (req, res): Promise<any> => {
 });
 
 // ✅ REGISTRAZIONE UTENTE
-router.post('/register', async (req, res): Promise<any> => {
+router.post('/register', async (req : Request, res: Response): Promise<any> => {
   const { username, email, password } = req.body;
   try {
     const esiste = await User.findOne({ email });
@@ -100,7 +100,7 @@ router.post('/register', async (req, res): Promise<any> => {
 });
 
 // ✅ /me → ritorna utente loggato
-router.get('/me', verifyToken, async (req, res): Promise<any> => {
+router.get('/me', verifyToken, async (req : Request, res: Response): Promise<any> => {
   try {
     const user = await User.findById((req as any).user.id);
     if (!user) return res.status(404).json({ message: 'Utente non trovato' });
@@ -111,7 +111,7 @@ router.get('/me', verifyToken, async (req, res): Promise<any> => {
 });
 
 // ✅ /auth/forgot-password
-router.post('/forgot-password', async (req, res): Promise<any> => {
+router.post('/forgot-password', async (req : Request, res: Response): Promise<any> => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -146,7 +146,7 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
 });
 
 // ✅ POST /auth/reset-password
-router.post('/reset-password', async (req, res): Promise<any> => {
+router.post('/reset-password', async (req : Request, res: Response): Promise<any> => {
   const { token, nuovaPassword, email } = req.body;
 
   if (!token || !email) return res.status(400).json({ message: 'Token o email mancanti' });
@@ -168,7 +168,7 @@ router.post('/reset-password', async (req, res): Promise<any> => {
 });
 
 // ✅ LOGOUT → elimina il cookie
-router.get('/logout', (req, res) => {
+router.get('/logout', (req : Request, res: Response) => {
   res.clearCookie('jwt', {
     httpOnly: true,
     secure: false // true in produzione con HTTPS
