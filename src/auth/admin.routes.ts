@@ -125,7 +125,7 @@ router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) : Promi
 });
 
 // ✅ Modifica completa perizia (compreso stato, descrizione ecc.)
-router.put('/perizie/:id', verifyToken, async (req: Request, res: Response) => {
+router.put('/perizie/:id', verifyToken, async (req: Request, res: Response) : Promise <any> => {
   console.log('PUT /perizie/:id BODY:', req.body);
 
   try {
