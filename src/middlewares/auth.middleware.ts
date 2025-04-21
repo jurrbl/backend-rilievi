@@ -1,24 +1,38 @@
-// src/middlewares/auth.middleware.ts
-import { RequestHandler } from 'express';
-import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import User from '../models/user.model';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersegreto123';
-
-export const verifyToken: RequestHandler = (req, res, next) => {
+// Middleware standard per verificare il token
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.jwt;
 
-  if (!token) {
-    res.status(401).json({ message: 'Token mancante' });
-    return;
-  }
+  if (!token) return res.status(401).json({ message: 'Token mancante' });
 
-  jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
-    if (err) {
-      res.status(403).json({ message: 'Token non valido' });
-      return;
+  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', async (err: any, decoded: any) => {
+    if (err) return res.status(403).json({ message: 'Token non valido' });
+
+    req.user = decoded;
+    next();
+  });
+};
+
+// 🛡️ Middleware per proteggere rotte admin
+export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies?.jwt;
+
+  if (!token) return res.status(401).json({ message: 'Token mancante' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', async (err: any, decoded: any) => {
+    if (err) return res.status(403).json({ message: 'Token non valido' });
+
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+
+    if (user.role !== 'admin') {
+      return res.status(403).json({ message: 'Accesso negato: solo per admin' });
     }
 
-    (req as any).user = decoded;
+    req.user = decoded;
     next();
   });
 };

@@ -5,8 +5,10 @@ import cors from 'cors';
 import passport from './auth/passport';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+
 import authRoutes from './auth/auth.routes';
-import { verifyToken } from './middlewares/auth.middleware';
+import operatorRoutes from './auth/operator.routes';
+import adminRoutes from './auth/admin.routes';
 
 dotenv.config();
 
@@ -14,6 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL! + process.env.DBNAME!;
 
+// 🔧 Middleware
 app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true
@@ -28,19 +31,20 @@ app.use(
   })
 );
 
-// ✅ Passport
+// 🔐 Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ API routes
+// 🌐 Routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/operator', operatorRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('✅ Backend avviato');
 });
 
-// ✅ Connessione DB + avvio server
+// 🚀 Start
 mongoose
   .connect(MONGO_URI)
   .then(() => {
