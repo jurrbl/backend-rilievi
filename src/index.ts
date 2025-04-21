@@ -18,7 +18,7 @@ const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL! + process.env.DBNAME!;
 
 // 🔧 Middleware
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: ['http://localhost:4200', 'https://backend-rilievi.onrender.com'],
   credentials: true
 }));
 app.use(express.json());
@@ -27,9 +27,14 @@ app.use(
   session({
     secret: process.env.JWT_SECRET!,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // solo su HTTPS
+      sameSite: 'none'
+    }
   })
-);
+);;
 
 // 🔐 Passport
 app.use(passport.initialize());
