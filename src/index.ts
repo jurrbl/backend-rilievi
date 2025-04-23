@@ -15,26 +15,27 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL! + process.env.DBNAME!;
+const isProduction = process.env.NODE_ENV === 'production';
+
 
 // 🔧 Middleware
 app.use(cors({
-  origin: ['https://backend-rilievi.onrender.com', 'http://localhost:4200'],
+  origin: 'http://localhost:4200',
   credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  session({
-    secret: process.env.JWT_SECRET!,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // solo su HTTPS
-      sameSite: 'none'
-    }
-  })
-);;
+
+app.use(session({
+  secret: process.env.JWT_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: isProduction, // solo true in produzione
+    sameSite: isProduction ? 'none' : 'lax' // lax per localhost
+  }
+}));
 
 // 🔐 Passport
 app.use(passport.initialize());
