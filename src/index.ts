@@ -63,6 +63,6 @@ mongoose
       console.log(`🚀 Server in ascolto su http://localhost:${PORT}`);
     });
   })
-  .catch((err) => {
+  .catch((err) => {1
     console.error('❌ Errore di connessione a MongoDB:', err);
   });

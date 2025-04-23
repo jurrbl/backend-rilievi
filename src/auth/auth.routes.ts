@@ -36,13 +36,12 @@ router.get(
       jwtOptions
     );
 
-    // ✅ Imposta cookie HttpOnly
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
+    });  
     
     res.redirect('http://localhost:4200/home');
   }
@@ -72,9 +71,10 @@ router.post('/login', async (req : Request, res: Response): Promise<any> => {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
     });
+    
     
 
     res.status(200).json({ message: 'Login riuscito' });
