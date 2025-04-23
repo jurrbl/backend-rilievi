@@ -39,10 +39,11 @@ router.get(
     // ✅ Imposta cookie HttpOnly
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: false, // ✅ metti true in produzione con HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
+    
     res.redirect('http://localhost:4200/home');
   }
 )
@@ -70,9 +71,11 @@ router.post('/login', async (req : Request, res: Response): Promise<any> => {
     // ✅ Salva JWT nel cookie HttpOnly
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: false, // ✅ true in produzione con HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    
 
     res.status(200).json({ message: 'Login riuscito' });
   } catch (error) {
