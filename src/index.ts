@@ -26,17 +26,21 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(session({
-  secret: process.env.JWT_SECRET!,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: isProduction, // solo true in produzione
-    sameSite: isProduction ? 'none' : 'lax' // lax per localhost
-  }
-}));
 
+const isRender = process.env.RENDER === 'true'; // su Render è true
+
+app.use(
+  session({
+    secret: process.env.JWT_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: isRender,               // true SOLO su Render
+      sameSite: isRender ? 'none' : 'lax' // sameSite none solo su Render
+    }
+  })
+);
 // 🔐 Passport
 app.use(passport.initialize());
 app.use(passport.session());
