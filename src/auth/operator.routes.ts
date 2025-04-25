@@ -8,7 +8,7 @@
     router.get('/perizie', verifyToken, async (req: Request, res: Response): Promise <any> => {
       try {
         const userId = (req as any).user.id;
-        const perizie = await Perizia.find({ codiceOperatore: userId });
+        const perizie = await Perizia.find({ codiceOperatore: userId }).select('codicePerizia dataOra coordinate indirizzo descrizione stato fotografie revisioneAdmin')        ;
         res.json({ perizie, nPerizie: perizie.length });
       } catch (error) {
         res.status(500).json({ message: 'Errore server', error });
@@ -38,6 +38,7 @@ router.get('/users', verifyToken, async (req: Request, res: Response) => {
           dataOra,
           coordinate,
           descrizione,
+          revisioneAdmin : 'In Attesa Di Revisione',
           indirizzo,
           stato: 'in_corso',
           codiceOperatore,
@@ -70,10 +71,10 @@ router.get('/users', verifyToken, async (req: Request, res: Response) => {
     });
     
     // ✅ Modifica perizia (solo descrizione, indirizzo, coordinate)
-    router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Promise <any> => {
+    router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Promise<any> => {
       try {
         const { id } = req.params;
-        const { descrizione, indirizzo, coordinate } = req.body;
+        const { descrizione, indirizzo, coordinate, revisioneAdmin } = req.body;
     
         const perizia = await Perizia.findById(id);
         if (!perizia) return res.status(404).json({ message: 'Perizia non trovata' });
@@ -81,6 +82,9 @@ router.get('/users', verifyToken, async (req: Request, res: Response) => {
         if (descrizione !== undefined) perizia.descrizione = descrizione;
         if (indirizzo !== undefined) perizia.indirizzo = indirizzo;
         if (coordinate !== undefined) perizia.coordinate = coordinate;
+    
+        // ✅ Salva il commento dell'admin separato
+        if (revisioneAdmin !== undefined) perizia.revisioneAdmin = revisioneAdmin;
     
         const aggiornata = await perizia.save();
         res.status(200).json(aggiornata);

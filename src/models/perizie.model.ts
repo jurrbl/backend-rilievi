@@ -16,6 +16,7 @@ export interface IPerizia extends Document {
   };
   indirizzo: string; // ✅ Aggiunto qui
   descrizione: string;
+  revisioneAdmin : string;
   fotografie: IFoto[];
   stato: 'in_corso' | 'completata' | 'annullata';
 }
@@ -34,8 +35,9 @@ const PeriziaSchema = new Schema<IPerizia>(
       latitudine: { type: Number, required: true },
       longitudine: { type: Number, required: true },
     },
-    indirizzo: { type: String, required: true }, // ✅ Aggiunto qui
+    indirizzo: { type: String, required: true }, 
     descrizione: { type: String, required: true },
+    revisioneAdmin: { type: String, default: 'In Attesa Di Revisione' },
     fotografie: {
       type: [FotoSchema],
       required: true,
