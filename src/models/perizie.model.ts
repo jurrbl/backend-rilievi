@@ -10,6 +10,7 @@ export interface IRevisioneAdmin {
   id: mongoose.Types.ObjectId;
   username: string;
   profilePicture?: string;
+  commento?: string; // 🔥 Aggiunto commento per revisione admin
 }
 
 export interface IPerizia extends Document {
@@ -36,7 +37,8 @@ const FotoSchema = new Schema<IFoto>({
 const RevisioneAdminSchema = new Schema<IRevisioneAdmin>({
   id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   username: { type: String, required: true },
-  profilePicture: { type: String }
+  profilePicture: { type: String },
+  commento: { type: String } 
 }, { _id: false });
 
 const PeriziaSchema = new Schema<IPerizia>(
@@ -50,8 +52,8 @@ const PeriziaSchema = new Schema<IPerizia>(
     },
     indirizzo: { type: String, required: true },
     descrizione: { type: String, required: true },
-    revisioneAdmin: { type: RevisioneAdminSchema, required: false }, // 🔥
-    dataRevisione: { type: Date },                                     // 🔥
+    revisioneAdmin: { type: RevisioneAdminSchema, required: false },
+    dataRevisione: { type: Date },                                   
     fotografie: {
       type: [FotoSchema],
       required: true,
