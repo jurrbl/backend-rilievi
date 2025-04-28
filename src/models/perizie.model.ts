@@ -10,9 +10,8 @@ export interface IRevisioneAdmin {
   id: mongoose.Types.ObjectId;
   username: string;
   profilePicture?: string;
-  commento?: string; // 🔥 Aggiunto commento per revisione admin
+  commento?: string;  // 🔥 aggiungi anche qui
 }
-
 export interface IPerizia extends Document {
   codicePerizia: string;
   codiceOperatore: mongoose.Types.ObjectId;
@@ -25,6 +24,7 @@ export interface IPerizia extends Document {
   descrizione: string;
   revisioneAdmin?: IRevisioneAdmin; // 🔥 ORA revisioneAdmin è un oggetto, non più stringa
   dataRevisione?: Date;              // 🔥 Aggiunto dataRevisione
+  commentoAdmin?: string;            // 🔥 Aggiunto commentoAdmin
   fotografie: IFoto[];
   stato: 'in_corso' | 'completata' | 'annullata';
 }
@@ -38,7 +38,7 @@ const RevisioneAdminSchema = new Schema<IRevisioneAdmin>({
   id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   username: { type: String, required: true },
   profilePicture: { type: String },
-  commento: { type: String } 
+  commento: { type: String, required: false }
 }, { _id: false });
 
 const PeriziaSchema = new Schema<IPerizia>(
@@ -53,6 +53,7 @@ const PeriziaSchema = new Schema<IPerizia>(
     indirizzo: { type: String, required: true },
     descrizione: { type: String, required: true },
     revisioneAdmin: { type: RevisioneAdminSchema, required: false },
+    commentoAdmin: { type: String, required: false }, // 🔥 Aggiunto commentoAdmin
     dataRevisione: { type: Date },                                   
     fotografie: {
       type: [FotoSchema],
