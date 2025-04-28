@@ -93,7 +93,7 @@ router.post(
 router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const { descrizione, coordinate, indirizzo, stato, fotografie, commentoAdmin } = req.body;
+    const { descrizione, coordinate, indirizzo, stato, fotografie, revisioneAdmin } = req.body;
 
     const perizia = await Perizia.findById(id);
     if (!perizia) return res.status(404).json({ message: 'Perizia non trovata' });
@@ -105,25 +105,24 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Pro
     if (fotografie !== undefined) perizia.fotografie = fotografie;
 
     const adminUser = await User.findById((req as any).user.id);
-
-    if (adminUser) {
+    if (adminUser && adminUser.role === 'admin') {
       perizia.revisioneAdmin = {
         id: new mongoose.Types.ObjectId((adminUser._id as any).toString()),
         username: adminUser.username,
         profilePicture: adminUser.profilePicture || '',
-        commento: commentoAdmin || ''  // ✅ Usa il campo commentoAdmin ricevuto dal client!
+        commento: revisioneAdmin?.commento || ''  // 🔥 Prendi commento da revisioneAdmin.commento!
       };
       perizia.dataRevisione = new Date();
     }
 
     await perizia.save();
-    return res.status(200).json({ message: 'Perizia aggiornata', perizia });
+    res.status(200).json({ message: 'Perizia aggiornata', perizia });
+
   } catch (error) {
     console.error('❌ Errore aggiornamento perizia:', error);
-    return res.status(500).json({ message: 'Errore aggiornamento perizia', error });
+    res.status(500).json({ message: 'Errore aggiornamento perizia', error });
   }
 });
-
 
 // ✅ Elimina perizia (solo se "in_corso", logica da gestire lato frontend)
 router.delete(
