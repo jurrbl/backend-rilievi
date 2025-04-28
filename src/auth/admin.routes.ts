@@ -105,10 +105,9 @@ router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res): Promis
 
 // ✅ Modifica perizia (descrizione, coordinate, stato, revisione)
 router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Promise<any> => {
-  
   try {
     const { id } = req.params;
-    const { descrizione, coordinate, indirizzo, stato } = req.body;
+    const { descrizione, coordinate, indirizzo, stato, fotografie, commentoAdmin } = req.body;
 
     const perizia = await Perizia.findById(id);
     if (!perizia) return res.status(404).json({ message: 'Perizia non trovata' });
@@ -116,25 +115,29 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Pro
     if (descrizione !== undefined) perizia.descrizione = descrizione;
     if (coordinate !== undefined) perizia.coordinate = coordinate;
     if (indirizzo !== undefined) perizia.indirizzo = indirizzo;
-
     if (stato !== undefined) perizia.stato = stato;
-    const adminUser = await User.findById((req as any).user.id) as IUser & { _id: mongoose.Types.ObjectId };
-    if (adminUser && adminUser.role === 'admin') {
+    if (fotografie !== undefined) perizia.fotografie = fotografie;
+
+    const adminUser = await User.findById((req as any).user.id);
+
+    if (adminUser) {
       perizia.revisioneAdmin = {
-        id: adminUser._id, 
+        id: new mongoose.Types.ObjectId((adminUser._id as any).toString()),
         username: adminUser.username,
-        profilePicture: adminUser.profilePicture || ''
+        profilePicture: adminUser.profilePicture || '',
+        commento: commentoAdmin || ''  // ✅ Usa il campo commentoAdmin ricevuto dal client!
       };
-      (perizia as any).dataRevisione = new Date(); // 👈 serve "as any" perché non era previsto nel modello
+      perizia.dataRevisione = new Date();
     }
 
-    const periziaAggiornata = await perizia.save();
-    res.status(200).json({ message: 'Perizia aggiornata', perizia: periziaAggiornata });
+    await perizia.save();
+    return res.status(200).json({ message: 'Perizia aggiornata', perizia });
   } catch (error) {
     console.error('❌ Errore aggiornamento perizia:', error);
-    res.status(500).json({ message: 'Errore aggiornamento perizia', error });
+    return res.status(500).json({ message: 'Errore aggiornamento perizia', error });
   }
 });
+
 
 // ✅ Elimina perizia
 router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res): Promise<any> => {

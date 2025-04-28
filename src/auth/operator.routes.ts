@@ -111,7 +111,7 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Pro
         id: new mongoose.Types.ObjectId((adminUser._id as any).toString()),
         username: adminUser.username,
         profilePicture: adminUser.profilePicture || '',
-        commento: commentoAdmin || ''  // <-- aggiunto il commento qui
+        commento: commentoAdmin || ''  // ✅ Usa il campo commentoAdmin ricevuto dal client!
       };
       perizia.dataRevisione = new Date();
     }
@@ -123,6 +123,7 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Pro
     return res.status(500).json({ message: 'Errore aggiornamento perizia', error });
   }
 });
+
 
 // ✅ Elimina perizia (solo se "in_corso", logica da gestire lato frontend)
 router.delete(
