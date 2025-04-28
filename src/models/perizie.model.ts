@@ -6,6 +6,12 @@ export interface IFoto {
   commento?: string;
 }
 
+export interface IRevisioneAdmin {
+  id: mongoose.Types.ObjectId;
+  username: string;
+  profilePicture?: string;
+}
+
 export interface IPerizia extends Document {
   codicePerizia: string;
   codiceOperatore: mongoose.Types.ObjectId;
@@ -14,9 +20,10 @@ export interface IPerizia extends Document {
     latitudine: number;
     longitudine: number;
   };
-  indirizzo: string; // ✅ Aggiunto qui
+  indirizzo: string;
   descrizione: string;
-  revisioneAdmin : string;
+  revisioneAdmin?: IRevisioneAdmin; // 🔥 ORA revisioneAdmin è un oggetto, non più stringa
+  dataRevisione?: Date;              // 🔥 Aggiunto dataRevisione
   fotografie: IFoto[];
   stato: 'in_corso' | 'completata' | 'annullata';
 }
@@ -25,6 +32,12 @@ const FotoSchema = new Schema<IFoto>({
   url: { type: String, required: true },
   commento: { type: String },
 });
+
+const RevisioneAdminSchema = new Schema<IRevisioneAdmin>({
+  id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  username: { type: String, required: true },
+  profilePicture: { type: String }
+}, { _id: false });
 
 const PeriziaSchema = new Schema<IPerizia>(
   {
@@ -35,9 +48,10 @@ const PeriziaSchema = new Schema<IPerizia>(
       latitudine: { type: Number, required: true },
       longitudine: { type: Number, required: true },
     },
-    indirizzo: { type: String, required: true }, 
+    indirizzo: { type: String, required: true },
     descrizione: { type: String, required: true },
-    revisioneAdmin: { type: String, default: 'In Attesa Di Revisione' },
+    revisioneAdmin: { type: RevisioneAdminSchema, required: false }, // 🔥
+    dataRevisione: { type: Date },                                     // 🔥
     fotografie: {
       type: [FotoSchema],
       required: true,

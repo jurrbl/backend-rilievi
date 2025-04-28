@@ -1,110 +1,89 @@
 import express, { Request, Response } from 'express';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { verifyToken, verifyAdmin } from '../middlewares/auth.middleware';
 import Perizia from '../models/perizie.model';
-import User from '../models/user.model';
-import bcrypt from 'bcryptjs'
-import { verifyAdmin } from '../middlewares/auth.middleware';    
-
+import User, { IUser } from '../models/user.model'; // 👈 importa bene l'interfaccia!
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose'; // 👈 assicurati di importare mongoose
 const router = express.Router();
 
 // 🛡️ Middleware di controllo ruolo admin
-async function isAdmin(req: Request, res: Response, next: any) : Promise <any>    {
+async function isAdmin(req: Request, res: Response, next: any): Promise<any> {
   const user = await User.findById((req as any).user.id);
-  if (user?.role !== 'admin') return res.status(403).json({ message: 'Accesso negato: solo admin' });
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Accesso negato: solo admin' });
   next();
 }
 
+// ✅ Tutte le perizie
 router.get('/all-perizie', verifyToken, async (req: Request, res: Response): Promise<any> => {
   try {
-    const perizie = await Perizia.find(); // tutte le perizie
+    const perizie = await Perizia.find();
     res.json({ perizie, nPerizie: perizie.length });
   } catch (error) {
     res.status(500).json({ message: 'Errore nel recupero perizie', error });
   }
 });
 
-
+// ✅ Lista utenti (normale)
 router.get('/utenti', verifyToken, isAdmin, async (req, res) => {
-    try {
-      const utenti = await User.find(); // senza populate
-      const utentiConPerizie = await Promise.all(
-        utenti.map(async utente => {
-          const perizie = await Perizia.find({ codiceOperatore: utente._id });
-          return { ...utente.toObject(), perizie };
-        })
-      );
-      res.json({ utenti: utentiConPerizie });
-    } catch (err) {
-      console.error('❌ Errore nel recupero utenti:', err);
-      res.status(500).json({ error: 'Errore nel recupero utenti' });
-    }
-  });
+  try {
+    const utenti = await User.find();
+    const utentiConPerizie = await Promise.all(
+      utenti.map(async utente => {
+        const perizie = await Perizia.find({ codiceOperatore: utente._id });
+        return { ...utente.toObject(), perizie };
+      })
+    );
+    res.json({ utenti: utentiConPerizie });
+  } catch (err) {
+    console.error('❌ Errore nel recupero utenti:', err);
+    res.status(500).json({ error: 'Errore nel recupero utenti' });
+  }
+});
 
-  router.get('/utenti-con-perizie', verifyAdmin, async (req: Request, res: Response) : Promise<any> => {
-    try {
-      const utenti = await User.find({ role: 'user' });
-  
-      // Conta perizie in_corso per ogni utente
-      const utentiConConteggio = await Promise.all(
-        utenti.map(async utente => {
-          const count = await Perizia.countDocuments({
-            codiceOperatore: utente._id,
-            stato: 'in_corso'
-          });
-  
-          return {
-            _id: utente._id,
-            username: utente.username,
-            email: utente.email,
-            profilePicture: utente.profilePicture,
-            in_corso_count: count
-          };
-        })
-      );
-  
-      res.json({ utenti: utentiConConteggio });
-    } catch (error) {
-      res.status(500).json({ message: 'Errore nel caricamento utenti con perizie', error });
-    }
-  });
-  
-  router.post('/users', verifyToken, isAdmin, async (req, res)  : Promise <any> => {
-    try {
-      const { username, email, password, role } = req.body;
-  
-      const esiste = await User.findOne({ email });
-      if (esiste) return res.status(400).json({ message: 'Email già registrata' });
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const nuovoUtente = new User({
-        username,
-        email,
-        password: hashedPassword,
-        role, // 'user' se abilitato, 'viewer' se no
-      });
-  
-      await nuovoUtente.save();
-      res.status(201).json({ message: 'Operatore creato con successo', utente: nuovoUtente });
-    } catch (error) {
-      res.status(500).json({ message: 'Errore creazione utente', error });
-    }
-  });
+// ✅ Utenti con conteggio perizie in corso
+router.get('/utenti-con-perizie', verifyAdmin, async (req: Request, res: Response): Promise<any> => {
+  try {
+    const utenti = await User.find({ role: 'user' });
 
+    const utentiConConteggio = await Promise.all(
+      utenti.map(async utente => {
+        const count = await Perizia.countDocuments({ codiceOperatore: utente._id, stato: 'in_corso' });
+        return {
+          _id: utente._id,
+          username: utente.username,
+          email: utente.email,
+          profilePicture: utente.profilePicture,
+          in_corso_count: count
+        };
+      })
+    );
 
-  router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) => {
-    try {
-      const operatoreId = req.params.id;
-      const perizie = await Perizia.find({ codiceOperatore: operatoreId });
-  
-      res.status(200).json({ perizie, nPerizie: perizie.length });
-    } catch (error) {
-      res.status(500).json({ message: 'Errore caricamento perizie utente', error });
-    }
-  });
+    res.json({ utenti: utentiConConteggio });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore nel caricamento utenti con perizie', error });
+  }
+});
 
+// ✅ Crea nuovo utente
+router.post('/users', verifyToken, isAdmin, async (req, res): Promise<any> => {
+  try {
+    const { username, email, password, role } = req.body;
 
-// ✅ Tutte le perizie (per la dashboard admin)
-router.get('/perizie', verifyToken, isAdmin, async (req, res) : Promise <any> => {
+    const esiste = await User.findOne({ email });
+    if (esiste) return res.status(400).json({ message: 'Email già registrata' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const nuovoUtente = new User({ username, email, password: hashedPassword, role });
+    await nuovoUtente.save();
+
+    res.status(201).json({ message: 'Utente creato', nuovoUtente });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore creazione utente', error });
+  }
+});
+
+// ✅ Tutte le perizie (populate)
+router.get('/perizie', verifyToken, isAdmin, async (req, res): Promise<any> => {
   try {
     const perizie = await Perizia.find().populate('codiceOperatore');
     res.json({ perizie, nPerizie: perizie.length });
@@ -113,8 +92,8 @@ router.get('/perizie', verifyToken, isAdmin, async (req, res) : Promise <any> =>
   }
 });
 
-// ✅ Perizie filtrate per operatore
-router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) : Promise <any> => {
+// ✅ Perizie di un utente
+router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res): Promise<any> => {
   try {
     const operatoreId = req.params.id;
     const perizie = await Perizia.find({ codiceOperatore: operatoreId });
@@ -124,13 +103,12 @@ router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) : Promi
   }
 });
 
-// ✅ Modifica completa perizia (compreso stato, descrizione ecc.)
-router.put('/perizie/:id', verifyToken, isAdmin, async (req: Request, res: Response): Promise<any> => {
-  console.log('PUT /perizie/:id BODY:', req.body);
-
+// ✅ Modifica perizia (descrizione, coordinate, stato, revisione)
+router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Promise<any> => {
+  
   try {
     const { id } = req.params;
-    const { descrizione, coordinate, indirizzo, stato, fotografie } = req.body;
+    const { descrizione, coordinate, indirizzo, stato } = req.body;
 
     const perizia = await Perizia.findById(id);
     if (!perizia) return res.status(404).json({ message: 'Perizia non trovata' });
@@ -138,33 +116,28 @@ router.put('/perizie/:id', verifyToken, isAdmin, async (req: Request, res: Respo
     if (descrizione !== undefined) perizia.descrizione = descrizione;
     if (coordinate !== undefined) perizia.coordinate = coordinate;
     if (indirizzo !== undefined) perizia.indirizzo = indirizzo;
-    if (fotografie !== undefined) perizia.fotografie = fotografie;
-    if (stato !== undefined) perizia.stato = stato;
 
-    // 🔥 AGGIUNGI QUESTO:
-    if (stato === 'completata' || stato === 'annullata') {
-      const adminUser = await User.findById((req as any).user.id); // prendi l'admin che sta aggiornando
+    if (stato !== undefined) perizia.stato = stato;
+    const adminUser = await User.findById((req as any).user.id) as IUser & { _id: mongoose.Types.ObjectId };
+    if (adminUser && adminUser.role === 'admin') {
       perizia.revisioneAdmin = {
-        id: adminUser._id,
+        id: adminUser._id, 
         username: adminUser.username,
         profilePicture: adminUser.profilePicture || ''
       };
-      perizia.dataRevisione = new Date(); // metti la data di revisione
+      (perizia as any).dataRevisione = new Date(); // 👈 serve "as any" perché non era previsto nel modello
     }
 
-    await perizia.save();
-    res.json({ message: 'Perizia aggiornata', perizia });
-
+    const periziaAggiornata = await perizia.save();
+    res.status(200).json({ message: 'Perizia aggiornata', perizia: periziaAggiornata });
   } catch (error) {
-    console.error('❌ ERRORE BACKEND:', error);
-    res.status(500).json({ message: 'Errore durante l\'aggiornamento', error });
+    console.error('❌ Errore aggiornamento perizia:', error);
+    res.status(500).json({ message: 'Errore aggiornamento perizia', error });
   }
 });
 
-
-
-// ✅ Elimina qualsiasi perizia
-router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res) : Promise <any> => {
+// ✅ Elimina perizia
+router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res): Promise<any> => {
   try {
     const { id } = req.params;
     const perizia = await Perizia.findByIdAndDelete(id);
@@ -176,30 +149,13 @@ router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res) : Promise <
   }
 });
 
-// ✅ Lista utenti
-router.get('/users', verifyToken, isAdmin, async (req, res) : Promise <any> => {
+// ✅ Lista utenti semplice
+router.get('/users', verifyToken, isAdmin, async (req, res): Promise<any> => {
   try {
     const users = await User.find({}, { password: 0 }); // nasconde password
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Errore caricamento utenti', error });
-  }
-});
-
-// ✅ Crea nuovo utente (admin)
-router.post('/users', verifyToken, isAdmin, async (req, res) : Promise <any> => {
-  try {
-    const { username, email, password, role } = req.body;
-    const esiste = await User.findOne({ email });
-    if (esiste) return res.status(400).json({ message: 'Email già registrata' });
-
-    const hashedPassword = await require('bcryptjs').hash(password, 10);
-    const nuovoUtente = new User({ username, email, password: hashedPassword, role });
-
-    await nuovoUtente.save();
-    res.status(201).json(nuovoUtente);
-  } catch (error) {
-    res.status(500).json({ message: 'Errore creazione utente', error });
   }
 });
 
