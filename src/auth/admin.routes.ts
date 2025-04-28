@@ -125,7 +125,7 @@ router.get('/perizie/utente/:id', verifyToken, isAdmin, async (req, res) : Promi
 });
 
 // ✅ Modifica completa perizia (compreso stato, descrizione ecc.)
-router.put('/perizie/:id', verifyToken, async (req: Request, res: Response) : Promise <any> => {
+router.put('/perizie/:id', verifyToken, isAdmin, async (req: Request, res: Response): Promise<any> => {
   console.log('PUT /perizie/:id BODY:', req.body);
 
   try {
@@ -141,13 +141,26 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response) : Pr
     if (fotografie !== undefined) perizia.fotografie = fotografie;
     if (stato !== undefined) perizia.stato = stato;
 
+    // 🔥 AGGIUNGI QUESTO:
+    if (stato === 'completata' || stato === 'annullata') {
+      const adminUser = await User.findById((req as any).user.id); // prendi l'admin che sta aggiornando
+      perizia.revisioneAdmin = {
+        id: adminUser._id,
+        username: adminUser.username,
+        profilePicture: adminUser.profilePicture || ''
+      };
+      perizia.dataRevisione = new Date(); // metti la data di revisione
+    }
+
     await perizia.save();
     res.json({ message: 'Perizia aggiornata', perizia });
+
   } catch (error) {
     console.error('❌ ERRORE BACKEND:', error);
     res.status(500).json({ message: 'Errore durante l\'aggiornamento', error });
   }
 });
+
 
 
 // ✅ Elimina qualsiasi perizia

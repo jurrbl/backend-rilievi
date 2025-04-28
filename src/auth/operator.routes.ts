@@ -8,7 +8,7 @@
     router.get('/perizie', verifyToken, async (req: Request, res: Response): Promise <any> => {
       try {
         const userId = (req as any).user.id;
-        const perizie = await Perizia.find({ codiceOperatore: userId }).select('codicePerizia dataOra coordinate indirizzo descrizione stato fotografie revisioneAdmin')        ;
+        const perizie = await Perizia.find({ codiceOperatore: userId }).select('codicePerizia dataOra coordinate indirizzo descrizione stato fotografie revisioneAdmin');
         res.json({ perizie, nPerizie: perizie.length });
       } catch (error) {
         res.status(500).json({ message: 'Errore server', error });
