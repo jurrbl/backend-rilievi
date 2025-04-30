@@ -40,12 +40,21 @@ router.get(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
-    });  
-    
-    res.redirect('http://localhost:4200/home');
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // 🔁 Rileva l'origine dinamicamente
+    const referer = req.headers.referer || '';
+    let redirectURL = 'http://localhost:4200/home';
+
+    if (referer.includes('8100')) {
+      redirectURL = 'http://localhost:8100/home';
+    }
+
+    res.redirect(redirectURL);
   }
-)
+);
+
 
 // ✅ Dentro AuthService (Angular - frontend)
 
