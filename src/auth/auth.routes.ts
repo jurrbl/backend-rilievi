@@ -38,8 +38,8 @@ router.get(
 
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.RENDER === 'true',               // 🔁 più preciso di NODE_ENV
+      sameSite: process.env.RENDER === 'true' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
