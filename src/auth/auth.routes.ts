@@ -26,6 +26,7 @@ router.get(
   passport.authenticate('google', { session: false }),
   (req: any, res: Response): void => {
     if (!req.user || !req.user._id) {
+      console.error('❌ Autenticazione fallita: utente non trovato');
       res.status(401).json({ message: 'Autenticazione fallita' });
       return;
     }
@@ -45,6 +46,8 @@ router.get(
       jwtOptions
     );
 
+    console.log('✅ JWT generato:', token);
+
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -52,13 +55,20 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log('✅ Cookie JWT inviato');
+
     const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:8100/home';
+
+    console.log('✅ Redirect dinamico ricevuto da sessione:', req.session.redirectUrl);
+    console.log('✅ Redirect finale calcolato:', redirectTo);
+
+    // Pulizia sessione
     delete req.session.redirectUrl;
 
-    console.log('🔁 Redirect finale:', redirectTo);
     res.redirect(redirectTo);
   }
 );
+
 // ✅ Dentro AuthService (Angular - frontend)
 
 // ✅ LOGIN CLASSICO (email + password)
