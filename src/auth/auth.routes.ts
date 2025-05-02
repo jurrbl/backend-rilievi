@@ -15,13 +15,11 @@ router.get('/google', (req, res, next) => {
 
   if (redirectUrl) {
     req.session.redirectUrl = redirectUrl;
-    console.log('✅ redirectUrl salvato nella sessione:', redirectUrl);
-
     req.session.save((err) => {
       if (err) {
-        console.error('❌ Errore durante il salvataggio della sessione:', err);
+        console.error('❌ Errore salvataggio sessione:', err);
       }
-      next(); // continua solo dopo aver salvato la sessione
+      next();
     });
   } else {
     next();
