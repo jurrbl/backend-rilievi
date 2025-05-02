@@ -9,7 +9,16 @@ import User from '../models/user.model';
 const router = express.Router();
 
 // 🔐 LOGIN CON GOOGLE
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  const redirectUrl = req.query.redirectUrl as string;
+
+  if (redirectUrl) {
+    req.session.redirectUrl = redirectUrl;
+  }
+
+  next();
+}, passport.authenticate('google', { scope: ['profile', 'email'] }));
+
 
 // 🔁 CALLBACK dopo login con Google
 router.get(
@@ -41,11 +50,14 @@ router.get(
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
-    });  
-    
-    res.redirect('http://localhost:4200/home');
+    });
+
+    const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:4200/home';
+    delete req.session.redirectUrl;
+
+    res.redirect(redirectTo);
   }
-)
+);
 
 // ✅ Dentro AuthService (Angular - frontend)
 
