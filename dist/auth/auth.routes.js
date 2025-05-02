@@ -34,7 +34,7 @@ router.get('/google/callback', passport_1.default.authenticate('google', { sessi
         secure: false, // ✅ metti true in produzione con HTTPS
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
     });
-    res.redirect('http://localhost:4200/home');
+    res.redirect('http://localhost:8101/home');
 });
 // ✅ Dentro AuthService (Angular - frontend)
 // ✅ LOGIN CLASSICO (email + password)
