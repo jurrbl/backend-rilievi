@@ -52,6 +52,9 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
     });
 
+    console.log('🔁 Redirect dinamico a:', req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL);
+
+
     const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:4200/home';
     delete req.session.redirectUrl;
 

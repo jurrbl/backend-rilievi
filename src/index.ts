@@ -20,7 +20,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // 🔧 Middleware
 app.use(cors({
-  origin: ['http://localhost:8100', 'http://localhost:4200'],
+  origin: ['http://localhost:8100', 'http://localhost:4200', "http://localhost:8101"],
   credentials: true
 }));
 app.use(express.json());
@@ -29,19 +29,16 @@ app.use(cookieParser());
 
 const isRender = process.env.RENDER === 'true'; // su Render è true
 
-app.use(
-  session({
-    secret: process.env.JWT_SECRET!,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: isRender,               // true SOLO su Render
-      sameSite: isRender ? 'none' : 'lax' // sameSite none solo su Render
-    }
-  })
-);
-// 🔐 Passport
+app.use(session({
+  secret: process.env.JWT_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: isRender,  // ← true su Render
+    sameSite: isRender ? 'none' : 'lax',
+  }
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
