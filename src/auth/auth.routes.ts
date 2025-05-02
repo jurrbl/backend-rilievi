@@ -30,7 +30,7 @@ router.get(
       return;
     }
 
-    const jwtSecret = process.env.JWT_SECRET || 'supersegreto123';
+    const jwtSecret = process.env.JWT_SECRET || 'supersegreto';
     const jwtOptions: SignOptions = {
       expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn'],
     };
@@ -49,19 +49,16 @@ router.get(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log('🔁 Redirect dinamico a:', req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL);
-
-
-    const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:4200/home';
+    const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:8100/home';
     delete req.session.redirectUrl;
 
+    console.log('🔁 Redirect finale:', redirectTo);
     res.redirect(redirectTo);
   }
 );
-
 // ✅ Dentro AuthService (Angular - frontend)
 
 // ✅ LOGIN CLASSICO (email + password)
