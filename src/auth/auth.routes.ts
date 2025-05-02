@@ -11,12 +11,21 @@ const router = express.Router();
 // 🔐 LOGIN CON GOOGLE
 router.get('/google', (req, res, next) => {
   const redirectUrl = req.query.redirectUrl as string;
+  console.log('🌐 redirectUrl ricevuto via query:', redirectUrl);
 
   if (redirectUrl) {
     req.session.redirectUrl = redirectUrl;
-  }
+    console.log('✅ redirectUrl salvato nella sessione:', redirectUrl);
 
-  next();
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Errore durante il salvataggio della sessione:', err);
+      }
+      next(); // continua solo dopo aver salvato la sessione
+    });
+  } else {
+    next();
+  }
 }, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 
@@ -55,16 +64,12 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log('✅ Cookie JWT inviato');
-
-    const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:8100/home';
+    const redirectTo = req.session.redirectUrl || process.env.FRONTEND_DEFAULT_URL || 'http://localhost:8101/home';
 
     console.log('✅ Redirect dinamico ricevuto da sessione:', req.session.redirectUrl);
     console.log('✅ Redirect finale calcolato:', redirectTo);
 
-    // Pulizia sessione
     delete req.session.redirectUrl;
-
     res.redirect(redirectTo);
   }
 );
