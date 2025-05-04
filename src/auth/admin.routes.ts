@@ -172,7 +172,8 @@ router.post('/users', verifyToken, isAdmin, async (req, res) : Promise<any> => {
   } catch (error) {
     // 👉 Stampiamo lo stack completo e l’errore grezzo
     console.error('❌ Errore creazione utente:', error);
-    return res.status(500).json({ message: 'Errore creazione utente', error: error.toString() });
+    const errorMessage = error instanceof Error ? error.toString() : 'Errore sconosciuto';
+    return res.status(500).json({ message: 'Errore creazione utente', error: errorMessage });
   }
 });
 
