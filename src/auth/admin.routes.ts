@@ -154,7 +154,7 @@ router.delete('/perizie/:id', verifyToken, isAdmin, async (req, res): Promise<an
 });
 
 // ✅ Lista utenti semplice
-router.post('/users', verifyToken, isAdmin, async (req, res) => {
+router.post('/users', verifyToken, isAdmin, async (req, res) : Promise<any> => {
   try {
     const { username, email, password, role } = req.body;
     // … log del body in ingresso
