@@ -20,7 +20,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // 🔧 Middleware
 app.use(cors({
-  origin: ['http://localhost:8101', 'http://localhost:4200'],
+  origin: ['http://localhost:8101', 'http://localhost:4200', "capacitor://localhost", 
+    "ionic://localhost"],
   credentials: true
 }));
 app.use(express.json());
