@@ -20,9 +20,16 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // 🔧 Middleware
 app.use(cors({
-  origin: ['http://localhost:8101', 'http://localhost:4200', "capacitor://localhost", 
-    "ionic://localhost"],
-  credentials: true
+  origin: [
+    'http://localhost:4200',
+    'http://localhost:8101',
+    'https://localhost',
+    'capacitor://localhost',
+    'ionic://localhost'
+  ],
+  credentials: true,
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
 }));
 app.use(express.json());
 app.use(cookieParser());
