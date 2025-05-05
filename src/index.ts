@@ -23,6 +23,7 @@ app.use(cors({
   origin: [
     'http://localhost:4200',
     'http://localhost:8101',
+    'http://localhost:8100',
     'https://localhost',
     'capacitor://localhost',
     'ionic://localhost'
