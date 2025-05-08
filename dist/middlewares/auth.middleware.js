@@ -8,17 +8,18 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 const verifyToken = (req, res, next) => {
     const token = req.cookies?.jwt;
+    console.log("Token ricevuto:", token); // Log del token ricevuto
     if (!token) {
-        res.status(401).json({ message: 'Token mancante' });
+        res.status(401).json({ message: "Token mancante" });
         return;
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
         req.user = decoded;
         next(); // ✅ prosegui se il token è valido
     }
     catch (err) {
-        res.status(403).json({ message: 'Token non valido' });
+        res.status(403).json({ message: "Token non valido" });
     }
 };
 exports.verifyToken = verifyToken;
@@ -26,25 +27,25 @@ exports.verifyToken = verifyToken;
 const verifyAdmin = async (req, res, next) => {
     const token = req.cookies?.jwt;
     if (!token) {
-        res.status(401).json({ message: 'Token mancante' });
+        res.status(401).json({ message: "Token mancante" });
         return;
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
         req.user = decoded;
         const user = await user_model_1.default.findById(decoded.id);
         if (!user) {
-            res.status(404).json({ message: 'Utente non trovato' });
+            res.status(404).json({ message: "Utente non trovato" });
             return;
         }
-        if (user.role !== 'admin') {
-            res.status(403).json({ message: 'Accesso negato: solo admin' });
+        if (user.role !== "admin") {
+            res.status(403).json({ message: "Accesso negato: solo admin" });
             return;
         }
         next();
     }
     catch (err) {
-        res.status(403).json({ message: 'Token non valido' });
+        res.status(403).json({ message: "Token non valido" });
     }
 };
 exports.verifyAdmin = verifyAdmin;

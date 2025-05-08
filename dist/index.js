@@ -17,19 +17,32 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.CONNECTIONSTRINGLOCAL + process.env.DBNAME;
+const isProduction = process.env.NODE_ENV === 'production';
 // 🔧 Middleware
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:4200',
-    credentials: true
+    origin: [
+        'http://localhost:4200',
+        'http://localhost:8101',
+        'http://localhost:8100',
+        'https://localhost',
+        'capacitor://localhost',
+        'ionic://localhost'
+    ],
+    credentials: true,
 }));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
+const isRender = process.env.RENDER === 'true'; // su Render è true
 app.use((0, express_session_1.default)({
     secret: process.env.JWT_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: isRender, // ← true su Render
+        sameSite: isRender ? 'none' : 'lax',
+    }
 }));
-// 🔐 Passport
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 // 🌐 Routes
@@ -49,5 +62,6 @@ mongoose_1.default
     });
 })
     .catch((err) => {
+    1;
     console.error('❌ Errore di connessione a MongoDB:', err);
 });

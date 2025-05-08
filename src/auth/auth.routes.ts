@@ -114,10 +114,10 @@ router.post("/login", async (req: Request, res: Response): Promise<any> => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
     });
 
-    res.status(200).json({ message: "Login riuscito", token, user });
+    return res.status(200).json({ message: "Login riuscito", token, user });
   } catch (error) {
     console.error("❌ Errore login:", error);
-    res.status(500).json({ message: "Errore durante il login", error });
+    return res.status(500).json({ message: "Errore durante il login", error });
   }
 });
 

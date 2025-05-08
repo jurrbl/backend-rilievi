@@ -39,6 +39,12 @@ const FotoSchema = new mongoose_1.Schema({
     url: { type: String, required: true },
     commento: { type: String },
 });
+const RevisioneAdminSchema = new mongoose_1.Schema({
+    id: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
+    username: { type: String, required: true },
+    profilePicture: { type: String },
+    commento: { type: String, required: false }
+}, { _id: false });
 const PeriziaSchema = new mongoose_1.Schema({
     codicePerizia: { type: String, required: true, unique: true },
     codiceOperatore: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -47,8 +53,11 @@ const PeriziaSchema = new mongoose_1.Schema({
         latitudine: { type: Number, required: true },
         longitudine: { type: Number, required: true },
     },
-    indirizzo: { type: String, required: true }, // ✅ Aggiunto qui
+    indirizzo: { type: String, required: true },
     descrizione: { type: String, required: true },
+    revisioneAdmin: { type: RevisioneAdminSchema, required: false },
+    commentoAdmin: { type: String, required: false }, // 🔥 Aggiunto commentoAdmin
+    dataRevisione: { type: Date },
     fotografie: {
         type: [FotoSchema],
         required: true,

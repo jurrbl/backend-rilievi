@@ -144,7 +144,7 @@ router.put(
         fotografie,
         revisioneAdmin,
       } = req.body;
-
+      console.log("Roba ricevuta:\n\n\n\n\n\n", req.body);
       const perizia = await Perizia.findById(id);
       if (!perizia)
         return res.status(404).json({ message: "Perizia non trovata" });

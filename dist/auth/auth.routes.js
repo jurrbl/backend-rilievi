@@ -12,97 +12,127 @@ const auth_middleware_1 = require("../middlewares/auth.middleware");
 const user_model_1 = __importDefault(require("../models/user.model"));
 const router = express_1.default.Router();
 // 🔐 LOGIN CON GOOGLE
-router.get('/google', passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
+router.get("/google", (req, res, next) => {
+    const redirectUrl = req.query.redirectUrl;
+    console.log("🌐 redirectUrl ricevuto via query:", redirectUrl);
+    if (redirectUrl) {
+        req.session.redirectUrl = redirectUrl;
+        req.session.save((err) => {
+            if (err) {
+                console.error("❌ Errore salvataggio sessione:", err);
+            }
+            next();
+        });
+    }
+    else {
+        next();
+    }
+}, passport_1.default.authenticate("google", { scope: ["profile", "email"] }));
 // 🔁 CALLBACK dopo login con Google
-router.get('/google/callback', passport_1.default.authenticate('google', { session: false }), (req, res) => {
+router.get("/google/callback", passport_1.default.authenticate("google", { session: false }), (req, res) => {
     if (!req.user || !req.user._id) {
-        res.status(401).json({ message: 'Autenticazione fallita' });
+        console.error("❌ Autenticazione fallita: utente non trovato");
+        res.status(401).json({ message: "Autenticazione fallita" });
         return;
     }
-    const jwtSecret = process.env.JWT_SECRET || 'supersegreto123';
+    const jwtSecret = process.env.JWT_SECRET || "supersegreto";
     const jwtOptions = {
-        expiresIn: (process.env.JWT_EXPIRES_IN || '7d'),
+        expiresIn: (process.env.JWT_EXPIRES_IN ||
+            "7d"),
     };
     const token = jsonwebtoken_1.default.sign({
         id: req.user._id,
         email: req.user.email,
         googleUsername: req.user.googleUsername,
     }, jwtSecret, jwtOptions);
-    // ✅ Imposta cookie HttpOnly
-    res.cookie('jwt', token, {
+    console.log("✅ JWT generato:", token);
+    res.cookie("jwt", token, {
         httpOnly: true,
-        secure: false, // ✅ metti true in produzione con HTTPS
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect('http://localhost:4200/home');
+    const redirectTo = req.session.redirectUrl ||
+        process.env.FRONTEND_DEFAULT_URL ||
+        "http://localhost:4200/home";
+    console.log("✅ Redirect dinamico ricevuto da sessione:", req.session.redirectUrl);
+    console.log("✅ Redirect finale calcolato:", redirectTo);
+    delete req.session.redirectUrl;
+    res.redirect(redirectTo);
 });
 // ✅ Dentro AuthService (Angular - frontend)
 // ✅ LOGIN CLASSICO (email + password)
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
     const { email, password } = req.body;
+    console.log("Login credentials:\n - Email: ", email + "\n - Password: " + password);
     try {
         const user = await user_model_1.default.findOne({ email });
         if (!user || !(await bcryptjs_1.default.compare(password, user.password)))
-            return res.status(401).json({ message: 'Email o password errati' });
+            return res.status(401).json({ message: "Email o password errati" });
         const token = jsonwebtoken_1.default.sign({
             id: user._id,
             email: user.email,
             username: user.username || user.googleUsername,
-        }, process.env.JWT_SECRET || 'supersegreto', { expiresIn: '7d' });
+        }, process.env.JWT_SECRET || "supersegreto", { expiresIn: "7d" });
+        console.log("✅ JWT generato:", token);
         // ✅ Salva JWT nel cookie HttpOnly
-        res.cookie('jwt', token, {
+        res.cookie("jwt", token, {
             httpOnly: true,
-            secure: false, // ✅ true in produzione con HTTPS
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
         });
-        res.status(200).json({ message: 'Login riuscito' });
-        window.location.reload();
+        return res.status(200).json({ message: "Login riuscito", token, user });
     }
     catch (error) {
-        console.error('❌ Errore login:', error);
-        res.status(500).json({ message: 'Errore durante il login', error });
+        console.error("❌ Errore login:", error);
+        return res.status(500).json({ message: "Errore durante il login", error });
     }
 });
 // ✅ REGISTRAZIONE UTENTE
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
     try {
         const esiste = await user_model_1.default.findOne({ email });
         if (esiste)
-            return res.status(400).json({ message: 'Email già registrata' });
+            return res.status(400).json({ message: "Email già registrata" });
         const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const nuovoUtente = new user_model_1.default({ username, email, password: hashedPassword });
         await nuovoUtente.save();
-        res.status(201).json({ message: 'Registrazione completata', user: nuovoUtente });
+        res
+            .status(201)
+            .json({ message: "Registrazione completata", user: nuovoUtente });
     }
     catch (error) {
-        console.error('❌ Errore registrazione:', error);
-        res.status(500).json({ message: 'Errore durante la registrazione', error });
+        console.error("❌ Errore registrazione:", error);
+        res.status(500).json({ message: "Errore durante la registrazione", error });
     }
 });
 // ✅ /me → ritorna utente loggato
-router.get('/me', auth_middleware_1.verifyToken, async (req, res) => {
+router.get("/me", auth_middleware_1.verifyToken, async (req, res) => {
     try {
         const user = await user_model_1.default.findById(req.user.id);
         if (!user)
-            return res.status(404).json({ message: 'Utente non trovato' });
+            return res.status(404).json({ message: "Utente non trovato" });
         res.json(user);
     }
     catch (error) {
-        res.status(500).json({ message: 'Errore server', error });
+        res.status(500).json({ message: "Errore server", error });
     }
 });
 // ✅ /auth/forgot-password
-router.post('/forgot-password', async (req, res) => {
+router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
     try {
         const user = await user_model_1.default.findOne({ email });
         if (!user)
-            return res.status(404).json({ message: 'Utente non trovato con questa email' });
-        const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET || 'supersegreto', { expiresIn: '1h' });
+            return res
+                .status(404)
+                .json({ message: "Utente non trovato con questa email" });
+        const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET || "supersegreto", { expiresIn: "1h" });
         const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
         const transporter = nodemailer_1.default.createTransport({
-            service: 'gmail',
+            service: "gmail",
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS,
@@ -111,44 +141,46 @@ router.post('/forgot-password', async (req, res) => {
         await transporter.sendMail({
             from: `"Supporto Rilievi" <${process.env.MAIL_USER}>`,
             to: email,
-            subject: 'Reset della Password',
+            subject: "Reset della Password",
             html: `
         <p>Hai richiesto il reset della password.</p>
         <p><a href="${resetLink}">Clicca qui per resettare la tua password</a></p>
         <p>Il link scadrà tra 1 ora.</p>
       `,
         });
-        res.status(200).json({ message: 'Email inviata con successo' });
+        res.status(200).json({ message: "Email inviata con successo" });
     }
     catch (error) {
-        res.status(500).json({ message: 'Errore invio email', error });
+        res.status(500).json({ message: "Errore invio email", error });
     }
 });
 // ✅ POST /auth/reset-password
-router.post('/reset-password', async (req, res) => {
+router.post("/reset-password", async (req, res) => {
     const { token, nuovaPassword, email } = req.body;
     if (!token || !email)
-        return res.status(400).json({ message: 'Token o email mancanti' });
+        return res.status(400).json({ message: "Token o email mancanti" });
     try {
-        jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'supersegreto');
+        jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || "supersegreto");
         const user = await user_model_1.default.findOne({ email });
         if (!user)
-            return res.status(404).json({ message: 'Utente non trovato con questa email' });
+            return res
+                .status(404)
+                .json({ message: "Utente non trovato con questa email" });
         const hashedPassword = await bcryptjs_1.default.hash(nuovaPassword, 10);
         user.password = hashedPassword;
         await user.save();
-        res.status(200).json({ message: 'Password aggiornata con successo' });
+        res.status(200).json({ message: "Password aggiornata con successo" });
     }
     catch (err) {
-        res.status(500).json({ message: 'Token non valido o scaduto' });
+        res.status(500).json({ message: "Token non valido o scaduto" });
     }
 });
 // ✅ LOGOUT → elimina il cookie
-router.get('/logout', (req, res) => {
-    res.clearCookie('jwt', {
+router.get("/logout", (req, res) => {
+    res.clearCookie("jwt", {
         httpOnly: true,
-        secure: false // true in produzione con HTTPS
+        secure: false, // true in produzione con HTTPS
     });
-    res.status(200).json({ message: 'Logout effettuato con successo' });
+    res.status(200).json({ message: "Logout effettuato con successo" });
 });
 exports.default = router;
