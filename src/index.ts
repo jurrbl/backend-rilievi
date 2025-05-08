@@ -28,6 +28,7 @@ app.use(
       "capacitor://localhost",
       "ionic://localhost",
       "rilievi-e-perizie.vercel.app",
+      "https://rilievi-e-perizie.vercel.app",
     ],
     credentials: true,
   })
