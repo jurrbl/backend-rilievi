@@ -110,7 +110,7 @@ router.put('/perizie/:id', verifyToken, async (req: Request, res: Response): Pro
         id: new mongoose.Types.ObjectId((adminUser._id as any).toString()),
         username: adminUser.username,
         profilePicture: adminUser.profilePicture || '',
-        commento: revisioneAdmin?.commento || ''  // 🔥 Prendi commento da revisioneAdmin.commento!
+        commento: revisioneAdmin?.commento
       };
       perizia.dataRevisione = new Date();
     }
