@@ -29,7 +29,7 @@ router.get("/users", auth_middleware_1.verifyToken, async (req, res) => {
     }
 });
 // ✅ Aggiungi nuova perizia
-router.post('/perizie', auth_middleware_1.verifyToken, async (req, res) => {
+router.post("/perizie", auth_middleware_1.verifyToken, async (req, res) => {
     try {
         const { dataOra, coordinate, descrizione, indirizzo } = req.body;
         const codicePerizia = await generaCodiceUnivoco();
@@ -40,22 +40,27 @@ router.post('/perizie', auth_middleware_1.verifyToken, async (req, res) => {
             coordinate,
             descrizione,
             indirizzo,
-            stato: 'in_corso',
+            stato: "in_corso",
             codiceOperatore,
             fotografie: [],
             revisioneAdmin: {
                 id: codiceOperatore,
-                username: 'In attesa',
-                profilePicture: '',
-                commento: 'In attesa di revisione'
+                username: "In attesa",
+                profilePicture: "",
+                commento: "In attesa di revisione",
             },
-            dataRevisione: null
+            dataRevisione: null,
         });
         await perizia.save();
         res.status(201).json(perizia);
     }
     catch (error) {
-        res.status(500).json({ message: 'Errore durante il salvataggio della perizia', error });
+        res
+            .status(500)
+            .json({
+            message: "Errore durante il salvataggio della perizia",
+            error,
+        });
     }
 });
 // ✅ Aggiungi foto a una perizia
@@ -77,13 +82,13 @@ router.post("/perizie/:id/foto", auth_middleware_1.verifyToken, async (req, res)
     }
 });
 // ✅ Modifica perizia (solo descrizione, indirizzo, coordinate)
-router.put('/perizie/:id', auth_middleware_1.verifyToken, async (req, res) => {
+router.put("/perizie/:id", auth_middleware_1.verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const { descrizione, coordinate, indirizzo, stato, fotografie, revisioneAdmin } = req.body;
+        const { descrizione, coordinate, indirizzo, stato, fotografie, revisioneAdmin, } = req.body;
         const perizia = await perizie_model_1.default.findById(id);
         if (!perizia)
-            return res.status(404).json({ message: 'Perizia non trovata' });
+            return res.status(404).json({ message: "Perizia non trovata" });
         if (descrizione !== undefined)
             perizia.descrizione = descrizione;
         if (coordinate !== undefined)
@@ -95,21 +100,22 @@ router.put('/perizie/:id', auth_middleware_1.verifyToken, async (req, res) => {
         if (fotografie !== undefined)
             perizia.fotografie = fotografie;
         const adminUser = await user_model_1.default.findById(req.user.id);
-        if (adminUser && adminUser.role === 'admin') {
+        if (adminUser && adminUser.role === "admin") {
+            console.log("revisioneAdmin: ", revisioneAdmin);
             perizia.revisioneAdmin = {
                 id: new mongoose_1.default.Types.ObjectId(adminUser._id.toString()),
                 username: adminUser.username,
-                profilePicture: adminUser.profilePicture || '',
-                commento: revisioneAdmin?.commento || '' // 🔥 Prendi commento da revisioneAdmin.commento!
+                profilePicture: adminUser.profilePicture || "",
+                commento: revisioneAdmin.commento,
             };
             perizia.dataRevisione = new Date();
         }
         await perizia.save();
-        res.status(200).json({ message: 'Perizia aggiornata', perizia });
+        res.status(200).json({ message: "Perizia aggiornata", perizia });
     }
     catch (error) {
-        console.error('❌ Errore aggiornamento perizia:', error);
-        res.status(500).json({ message: 'Errore aggiornamento perizia', error });
+        console.error("❌ Errore aggiornamento perizia:", error);
+        res.status(500).json({ message: "Errore aggiornamento perizia", error });
     }
 });
 // ✅ Elimina perizia (solo se "in_corso", logica da gestire lato frontend)
@@ -122,9 +128,7 @@ router.delete("/perizie/:id", auth_middleware_1.verifyToken, async (req, res) =>
         res.status(200).json({ message: "Perizia eliminata con successo" });
     }
     catch (error) {
-        res
-            .status(500)
-            .json({
+        res.status(500).json({
             message: "Errore durante l'eliminazione della perizia",
             error,
         });
