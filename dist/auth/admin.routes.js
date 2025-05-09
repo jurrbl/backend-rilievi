@@ -115,7 +115,6 @@ router.put("/perizie/:id", auth_middleware_1.verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { descrizione, coordinate, indirizzo, stato, fotografie, revisioneAdmin, } = req.body;
-        console.log("Roba ricevuta:\n\n\n\n\n\n", req.body);
         const perizia = await perizie_model_1.default.findById(id);
         if (!perizia)
             return res.status(404).json({ message: "Perizia non trovata" });
@@ -131,11 +130,12 @@ router.put("/perizie/:id", auth_middleware_1.verifyToken, async (req, res) => {
             perizia.fotografie = fotografie;
         const adminUser = await user_model_1.default.findById(req.user.id);
         if (adminUser && adminUser.role === "admin") {
+            console.log("revisionAdmin in Admin Route: ", revisioneAdmin);
             perizia.revisioneAdmin = {
                 id: new mongoose_1.default.Types.ObjectId(adminUser._id.toString()),
                 username: adminUser.username,
                 profilePicture: adminUser.profilePicture || "",
-                commento: revisioneAdmin?.commento || "", // 🔥 Prendi commento da revisioneAdmin.commento!
+                commento: revisioneAdmin.commento,
             };
             perizia.dataRevisione = new Date();
         }

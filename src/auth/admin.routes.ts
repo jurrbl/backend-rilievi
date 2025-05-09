@@ -144,7 +144,6 @@ router.put(
         fotografie,
         revisioneAdmin,
       } = req.body;
-      console.log("Roba ricevuta:\n\n\n\n\n\n", req.body);
       const perizia = await Perizia.findById(id);
       if (!perizia)
         return res.status(404).json({ message: "Perizia non trovata" });
@@ -157,11 +156,12 @@ router.put(
 
       const adminUser = await User.findById((req as any).user.id);
       if (adminUser && adminUser.role === "admin") {
+        console.log("revisionAdmin in Admin Route: ", revisioneAdmin);
         perizia.revisioneAdmin = {
           id: new mongoose.Types.ObjectId((adminUser._id as any).toString()),
           username: adminUser.username,
           profilePicture: adminUser.profilePicture || "",
-          commento: revisioneAdmin?.commento || "", // 🔥 Prendi commento da revisioneAdmin.commento!
+          commento: revisioneAdmin.commento,
         };
         perizia.dataRevisione = new Date();
       }
